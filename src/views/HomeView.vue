@@ -1,18 +1,24 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div class="container-fluid">
+    <div class="text-center">
+      <h1 class="bg-primary text-white p-3 m-2">{{ message }}</h1>
+      <h3 class="m-4">Chcesz się uczyć czy rozwiązywać testy?</h3>
+      <div class="btn-group">
+        <router-link class="btn btn-primary btn-lg" v-bind:to="{name: 'category', params: { op: 'learning'}}">Nauka</router-link>
+        <router-link class="btn btn-primary btn-lg" v-bind:to="{name: 'category', params: { op: 'testing'}}">Testy</router-link>
+      </div>
+      <router-view></router-view>
+    </div>
+      
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
-
 export default {
-  name: 'HomeView',
-  components: {
-    HelloWorld
+  data() {
+    return {
+      message: "Witamy w apliakcji Historyczne Fiszki!"
+    }
   }
 }
 </script>
