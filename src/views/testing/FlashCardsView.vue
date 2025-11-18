@@ -1,0 +1,3 @@
+<template>
+    Zestaw fiszek
+</template>
