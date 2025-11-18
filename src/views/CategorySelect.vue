@@ -7,7 +7,7 @@
             <h3 class="mb-4">Wybierz interesujący Cię obszar geograficzny:</h3>
             <div v-for="(area, i) in allHistoryAreas" v-bind:key="area" class="form-check d-grid gap-2 col-2 mx-auto">
               <input type="radio" class="btn-check" v-model="historyArea" v-bind:value="area" v-bind:id="'area' + i" autocomplete="off" v-on:change="resetHistoryEra"/>
-              <label class="btn btn-outline-primary btn-lg mb-2" v-bind:for="'area' + i">{{ area }}</label>
+              <label class="btn btn-outline-primary btn-lg mb-2" v-bind:for="'area' + i">{{ area.name }}</label>
             </div>
         </div>
         <div v-if="showEraContainer" class="p-5">
@@ -61,38 +61,47 @@ export default {
       }
     },
     showEraContainer() {
-      return this.historyArea == "" ? false : true;
+      return this.historyArea ? true : false;
     },
 
     activeEras() {
-      return this.historyArea == "Polska" ? this.allEras.slice(2) : this.allEras;
+      return this.historyArea.name == "Polska" ? this.allEras.slice(2) : this.allEras;
     },
 
     canGoForward() {
-      return this.historyArea != "" && this.historyEra != {} ? true : false
+      return (this.historyArea && this.historyEra) ? true : false
     }
   },
 
   methods: {
     resetHistoryEra() {
-      this.$store.commit("categories/setHistoryEra", {});
+      this.$store.commit("categories/setHistoryEra", null);
     },
 
     goForward() {
       if (this.canGoForward) {
-        console.log(this.$route.path);
-        this.$router.push(`${this.$route.path}/${this.historyArea}/${this.historyEra.name}`);
+        this.$router.push(`${this.$route.path}/${this.historyArea.routeName}/${this.historyEra.routeName}`);
       }
     }
   },
 
   // eslint-disable-next-line no-unused-vars
   beforeRouteLeave(to, from) {
-    this.$store.commit("categories/setHistoryArea", "");
-    this.$store.commit("categories/setHistoryEra", {});
+    this.$store.commit("categories/setHistoryArea", null);
+    this.$store.commit("categories/setHistoryEra", null);
   },
   
   created() {
+    console.log(this.historyArea);
+    console.log(this.historyEra);
+    console.log(this.canGoForward);
+    let zmienna = {};
+
+    if(zmienna) {
+      console.log("Tak")
+    } else {
+      console.log("Nie")
+    }
     if (this.$route.params.op == "testing") {
         this.isTesting = true;
     } else {

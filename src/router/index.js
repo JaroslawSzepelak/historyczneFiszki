@@ -31,6 +31,7 @@ const routes = [{
     },
     {
         path: '/:pathMatch(.*)*',
+        name: "NotFound",
         component: NotFoundView
     }
 ]
@@ -38,6 +39,15 @@ const routes = [{
 const router = createRouter({
     history: createWebHistory(process.env.BASE_URL),
     routes
+})
+
+router.beforeEach((to, from, next) => {
+    console.log("Od " + from.path);
+    console.log("Do " + to.path);
+    if (to.path == '/testing/polska/prehistoria' || to.path == '/testing/polska/starozytnosc') next({ name: "NotFound" })
+    else {
+        next()
+    }
 })
 
 export default router

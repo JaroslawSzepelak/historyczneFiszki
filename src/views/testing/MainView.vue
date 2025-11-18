@@ -8,23 +8,24 @@
         </div>
         <div class="row justify-content-md-center text-white">
             <div class="bg-warning col-6 fs-5 p-5">
-                <h4>Upewnij się, że podałeś właściwe nazwy:</h4>
+                <h4>Upewnij się, że podałeś właściwe nazwy w adresie URL:</h4>
                 <ul>
-                    <li>Dla obszaru geograficznego dostępne nazwy to: {{ allAreasString }}</li>
-                    <li>Dla epoki historycznej dostępne nazwy to: {{ allErasString }}</li>
+                    <li>Dla obszaru geograficznego dostępne nazwy w URL to: {{ allAreasRouteNamesString }}</li>
+                    <li>Dla epoki historycznej dostępne nazwy w URL to: {{ allErasRouteNamesString }}</li>
                 </ul>
             </div>
         </div>
         <div class="row text-center mt-5">
-            <h4>Popraw adres URL ręcznie lub wróć opcji wyboru epoki historycznej i obszaru geograficznego</h4>
+            <h4>Popraw adres URL ręcznie lub wróć opcji wyboru epoki historycznej i obszaru geograficznego. Możesz również wrócić do strony głownej</h4>
             <div class="d-flex justify-content-center gap-3 p-3">
-            <button class="btn btn-primary" v-on:click="$router.push('/testing')">Powrót</button>
+            <button class="btn btn-primary" v-on:click="$router.push('/testing')">Powrót do opcji wyboru</button>
+            <button class="btn btn-secondary" v-on:click="$router.push('/')">Powrót do strony głównej</button>
             </div>
         </div>
     </div>
     <div v-else>
         <div class="row p-2 mb-5">
-            <h3 class="text-center">Pytania będą dotyczyć wybranego przez Ciebie obszaru, czyli: <span class="fw-bold">{{ area }}</span>. Dodatkowo wybrałeś grupę fiszek z następującej epoki: <span class="fw-bold">{{ era.name }}</span></h3>
+            <h3 class="text-center">Pytania będą dotyczyć wybranego przez Ciebie obszaru, czyli: <span class="fw-bold">{{ area.name }}</span>. Dodatkowo wybrałeś grupę fiszek z następującej epoki: <span class="fw-bold">{{ era.name }}</span></h3>
         </div>
         <div class="row justify-content-md-center text-white">
             <div class="bg-info col-6 fs-5 p-5">
@@ -35,7 +36,7 @@
         <div class="row text-center mt-5">
             <h4>Przejdź do zestawu fiszek lub wróć aby zmienić epokę historyczną lub obszar geograficzny</h4>
             <div class="d-flex justify-content-center gap-3 p-3">
-            <button class="btn btn-secondary" v-on:click="$router.back()">Wstecz</button>
+            <button class="btn btn-secondary" v-on:click="$router.push('/testing')">Wstecz</button>
             <button class="btn btn-primary" v-on:click="goToFlashcards()">Zaczynamy!</button>
             </div>
         </div>
@@ -61,11 +62,11 @@
             era() {
                 return this.$store.state.categories.historyEra;
             },
-            allAreasString() {
-                return this.$store.getters['categories/allAreasString'];
+            allAreasRouteNamesString() {
+                return this.$store.getters['categories/allAreasRouteNamesString'];
             },
-            allErasString() {
-                return this.$store.getters['categories/allErasString'];
+            allErasRouteNamesString() {
+                return this.$store.getters['categories/allErasRouteNamesString'];
             },
             validAreaName() {
                 return this.undefinedArea ? ["text-danger"] : ["text-black"]
@@ -81,7 +82,7 @@
             }
         },
         created() {
-            let area = this.$store.state.categories.allAreas.find((name) => name == this.userAreaName);
+            let area = this.$store.state.categories.allAreas.find(({routeName}) => routeName == this.userAreaName);
             if(area == undefined) {
                 this.undefinedArea = true;
             } else {
@@ -89,7 +90,7 @@
                 this.undefinedArea = false;
             }
 
-            let era = this.$store.state.categories.allEras.find(({name}) => name == this.userEraName);
+            let era = this.$store.state.categories.allEras.find(({routeName}) => routeName == this.userEraName);
 
             if(era == undefined) {
                 this.undefinedEra = true;
