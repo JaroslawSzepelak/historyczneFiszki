@@ -6,6 +6,15 @@
         <div class="row p-4 mb-5">
             <h3 class="text-center">Wystąpił błąd podczas pobierania danych. Prawdopodobnie próbowałes ręcznie wpisać adres URL. Upewnij się, że obszar geograficzny (<span class="fw-bold" v-bind:class="validAreaName">{{ userAreaName }}</span>) oraz epoka historyczna (<span class="fw-bold" v-bind:class="validEraName">{{ userEraName }}</span>) są wpisane poprawnie</h3>
         </div>
+        <div class="row justify-content-md-center text-white">
+            <div class="bg-warning col-6 fs-5 p-5">
+                <h4>Upewnij się, że podałeś właściwe nazwy:</h4>
+                <ul>
+                    <li>Dla obszaru geograficznego dostępne nazwy to: {{ allAreasString }}</li>
+                    <li>Dla epoki historycznej dostępne nazwy to: {{ allErasString }}</li>
+                </ul>
+            </div>
+        </div>
         <div class="row text-center mt-5">
             <h4>Popraw adres URL ręcznie lub wróć opcji wyboru epoki historycznej i obszaru geograficznego</h4>
             <div class="d-flex justify-content-center gap-3 p-3">
@@ -52,6 +61,12 @@
             era() {
                 return this.$store.state.categories.historyEra;
             },
+            allAreasString() {
+                return this.$store.getters['categories/allAreasString'];
+            },
+            allErasString() {
+                return this.$store.getters['categories/allErasString'];
+            },
             validAreaName() {
                 return this.undefinedArea ? ["text-danger"] : ["text-black"]
             },
@@ -70,12 +85,11 @@
             if(area == undefined) {
                 this.undefinedArea = true;
             } else {
-                this.$store.commit("categories/setHistoryArea", this.userArea);
+                this.$store.commit("categories/setHistoryArea", area);
                 this.undefinedArea = false;
             }
 
             let era = this.$store.state.categories.allEras.find(({name}) => name == this.userEraName);
-            console.log(era);
 
             if(era == undefined) {
                 this.undefinedEra = true;

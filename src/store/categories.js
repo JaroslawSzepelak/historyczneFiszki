@@ -30,7 +30,18 @@ export default {
         historyArea: "",
         historyEra: {}
     },
-    getters: {},
+    getters: {
+        allAreasString(state) {
+            return state.allAreas.join(", ");
+        },
+        allErasString(state) {
+            let eraNames = [];
+            state.allEras.forEach(era => {
+                eraNames.push(era.name);
+            });
+            return eraNames.join(", ");
+        }
+    },
     mutations: {
         setHistoryArea(state, historyArea) {
             state.historyArea = historyArea;
