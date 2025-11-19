@@ -92,16 +92,6 @@ export default {
   },
   
   created() {
-    console.log(this.historyArea);
-    console.log(this.historyEra);
-    console.log(this.canGoForward);
-    let zmienna = {};
-
-    if(zmienna) {
-      console.log("Tak")
-    } else {
-      console.log("Nie")
-    }
     if (this.$route.params.op == "testing") {
         this.isTesting = true;
     } else {

@@ -24,10 +24,10 @@ const routes = [{
     {
         path: '/testing/:area/:era',
         component: TestingMainView,
-        children: [{
-            path: 'flashcards',
-            component: FlashCardsView
-        }]
+    },
+    {
+        path: '/testing/:area/:era/flashcards',
+        component: FlashCardsView
     },
     {
         path: '/:pathMatch(.*)*',
@@ -42,8 +42,6 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-    console.log("Od " + from.path);
-    console.log("Do " + to.path);
     if (to.path == '/testing/polska/prehistoria' || to.path == '/testing/polska/starozytnosc') next({ name: "NotFound" })
     else {
         next()

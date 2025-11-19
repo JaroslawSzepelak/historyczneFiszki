@@ -6,7 +6,7 @@
         <div class="row p-4 mb-5">
             <h3 class="text-center">Wystąpił błąd podczas pobierania danych. Prawdopodobnie próbowałes ręcznie wpisać adres URL. Upewnij się, że obszar geograficzny (<span class="fw-bold" v-bind:class="validAreaName">{{ userAreaName }}</span>) oraz epoka historyczna (<span class="fw-bold" v-bind:class="validEraName">{{ userEraName }}</span>) są wpisane poprawnie</h3>
         </div>
-        <div class="row justify-content-md-center text-white">
+        <div class="row justify-content-sm-center text-white">
             <div class="bg-warning col-6 fs-5 p-5">
                 <h4>Upewnij się, że podałeś właściwe nazwy w adresie URL:</h4>
                 <ul>
@@ -27,8 +27,8 @@
         <div class="row p-2 mb-5">
             <h3 class="text-center">Pytania będą dotyczyć wybranego przez Ciebie obszaru, czyli: <span class="fw-bold">{{ area.name }}</span>. Dodatkowo wybrałeś grupę fiszek z następującej epoki: <span class="fw-bold">{{ era.name }}</span></h3>
         </div>
-        <div class="row justify-content-md-center text-white">
-            <div class="bg-info col-6 fs-5 p-5">
+        <div class="row justify-content-sm-center text-white">
+            <div class="bg-info w-50 fs-5 p-5">
                 <h4>Krótko o epoce:</h4>
                 <p > {{ era.description }}</p>
             </div>
@@ -46,15 +46,8 @@
 </template>
 
 <script>
+    import categoriesChecker from '@/mixins/categoriesChecker';
     export default {
-        data() {
-            return {
-                userAreaName: this.$route.params.area,
-                userEraName: this.$route.params.era, 
-                undefinedArea: false,
-                undefinedEra: false
-            }
-        },
         computed: {
             area() {
                 return this.$store.state.categories.historyArea;
@@ -78,26 +71,14 @@
         },
         methods: {
             goToFlashcards() {
-                this.$router.push()
-            }
+                this.$router.push(`/testing/${this.$route.params.area}/${this.$route.params.era}/flashcards`);
+            },
         },
         created() {
-            let area = this.$store.state.categories.allAreas.find(({routeName}) => routeName == this.userAreaName);
-            if(area == undefined) {
-                this.undefinedArea = true;
-            } else {
-                this.$store.commit("categories/setHistoryArea", area);
-                this.undefinedArea = false;
-            }
+            this.checkArea();
+            this.checkEra();
+        },
 
-            let era = this.$store.state.categories.allEras.find(({routeName}) => routeName == this.userEraName);
-
-            if(era == undefined) {
-                this.undefinedEra = true;
-            } else {
-                this.$store.commit("categories/setHistoryEra", era);
-                this.undefinedEra = false;
-            }
-        }
+        mixins: [categoriesChecker]
     }
 </script>
