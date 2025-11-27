@@ -18,3 +18,21 @@
             </div>
       </footer>
 </template>
+
+<script>
+      export default {
+            computed: {
+                  flashcardsAccessible() {
+                        return this.$store.state.flashcards.accessible;
+                  }
+            },
+
+            created() {
+                  this.$store.dispatch("flashcards/loadAccesible");
+                  this.$watch('flashcardsAccessible', () => {
+                        this.$store.dispatch("flashcards/storeAccessible")
+                  })
+            }
+      }
+</script>
+

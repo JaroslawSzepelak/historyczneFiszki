@@ -71,6 +71,8 @@
         },
         methods: {
             goToFlashcards() {
+                this.$store.commit("flashcards/setAccessible", true);
+                console.log("Zmiana wartości flagi na: " + this.$store.state.flashcards.accessible);
                 this.$router.push(`/testing/${this.$route.params.area}/${this.$route.params.era}/flashcards`);
             },
         },

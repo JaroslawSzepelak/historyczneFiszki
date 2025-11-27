@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import CategorySelect from '@/views/CategorySelect.vue'
@@ -5,12 +6,14 @@ import LearningMainView from '@/views/learning/MainView.vue'
 import TestingMainView from '@/views/testing/MainView.vue'
 import FlashCardsView from '@/views/testing/FlashCardsView.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
+import NoAccess from '@/views/NoAccess.vue'
+import store from '@/store'
 
 const routes = [{
         path: '/',
         name: 'home',
         alias: '/home',
-        component: HomeView
+        component: HomeView,
     },
     {
         path: '/:op(learning|testing)',
@@ -27,13 +30,26 @@ const routes = [{
     },
     {
         path: '/testing/:area/:era/flashcards',
-        component: FlashCardsView
+        name: "Flashcards",
+        component: FlashCardsView,
+        beforeEnter: (to, from, next) => {
+            if (store.state.flashcards.accessible) {
+                next();
+            } else {
+                next('/no-access')
+            }
+        },
     },
     {
         path: '/:pathMatch(.*)*',
         name: "NotFound",
         component: NotFoundView
-    }
+    },
+    {
+        path: '/no-access',
+        name: "NoAccess",
+        component: NoAccess
+    },
 ]
 
 const router = createRouter({
