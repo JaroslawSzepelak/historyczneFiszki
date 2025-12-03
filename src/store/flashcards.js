@@ -3,7 +3,13 @@ import { loadRouteLocation } from "vue-router";
 export default {
     namespaced: true,
     state: {
-        accessible: false
+        accessible: false,
+        data: [{
+            id: 1,
+            question: "W którym roku miał miejsce chrzest Polski?",
+            answers: ["1025", "972", "1018", "966"],
+            correctAnswer: "966"
+        }]
     },
     getters: {
 

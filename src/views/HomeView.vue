@@ -18,7 +18,6 @@ export default {
   },
 
   beforeRouteLeave(to, from, next) {
-    console.log("Nazwa następnej trasy: " + to.name);
     if (to.name == "Flashcards") {
       next('/no-access');
     } else {
