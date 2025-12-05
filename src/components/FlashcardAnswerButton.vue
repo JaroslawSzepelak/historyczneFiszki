@@ -1,6 +1,6 @@
 <template>
     <div class="d-inline">
-        <input type="radio" class="btn-check" v-model="value" :value="buttonAnswer" :id="answerId" @change="$emit('checkAnswer')" autocomplete="off"/>
+        <input type="radio" class="btn-check" v-model="value" :value="buttonAnswer" :id="answerId" autocomplete="off" :disabled="disabled"/>
         <label class="btn btn-lg mb-2" :class="buttonClass" :for="answerId">{{ buttonAnswer }}</label>
     </div>
 </template>
@@ -14,9 +14,13 @@
             buttonClass: {
                 type: String,
                 default: 'btn-outline-primary'
+            },
+            disabled: {
+                type: Boolean,
+                default: false
             }
         },
-        emits: ['update:userAnswer', 'checkAnswer'],
+        emits: ['update:userAnswer'],
 
         computed: {
             value: {
