@@ -2,27 +2,7 @@
     <div class="row">
         <h2 class=" bg-primary text-center text-white p-3">Główny komponent rozwiązywania testów</h2>
     </div>
-    <div v-if="undefinedArea || undefinedEra">
-        <div class="row p-4 mb-5">
-            <h3 class="text-center">Wystąpił błąd podczas pobierania danych. Prawdopodobnie próbowałes ręcznie wpisać adres URL. Upewnij się, że obszar geograficzny (<span class="fw-bold" v-bind:class="validAreaName">{{ userAreaName }}</span>) oraz epoka historyczna (<span class="fw-bold" v-bind:class="validEraName">{{ userEraName }}</span>) są wpisane poprawnie</h3>
-        </div>
-        <div class="row justify-content-sm-center text-white">
-            <div class="bg-warning col-6 fs-5 p-5">
-                <h4>Upewnij się, że podałeś właściwe nazwy w adresie URL:</h4>
-                <ul>
-                    <li>Dla obszaru geograficznego dostępne nazwy w URL to: {{ allAreasRouteNamesString }}</li>
-                    <li>Dla epoki historycznej dostępne nazwy w URL to: {{ allErasRouteNamesString }}</li>
-                </ul>
-            </div>
-        </div>
-        <div class="row text-center mt-5">
-            <h4>Popraw adres URL ręcznie lub wróć opcji wyboru epoki historycznej i obszaru geograficznego. Możesz również wrócić do strony głownej</h4>
-            <div class="d-flex justify-content-center gap-3 p-3">
-            <button class="btn btn-primary" v-on:click="$router.push('/testing')">Powrót do opcji wyboru</button>
-            <button class="btn btn-secondary" v-on:click="$router.push('/')">Powrót do strony głównej</button>
-            </div>
-        </div>
-    </div>
+    <undefined-era-or-area v-if="undefinedArea || undefinedEra" />
     <div v-else>
         <div class="row p-2 mb-5">
             <h3 class="text-center">Pytania będą dotyczyć wybranego przez Ciebie obszaru, czyli: <span class="fw-bold">{{ area.name }}</span>. Dodatkowo wybrałeś grupę fiszek z następującej epoki: <span class="fw-bold">{{ era.name }}</span></h3>
@@ -36,38 +16,28 @@
         <div class="row text-center mt-5">
             <h4>Przejdź do zestawu fiszek lub wróć aby zmienić epokę historyczną lub obszar geograficzny</h4>
             <div class="d-flex justify-content-center gap-3 p-3">
-            <button class="btn btn-secondary" v-on:click="$router.push('/testing')">Wstecz</button>
-            <button class="btn btn-primary" v-on:click="goToFlashcards()">Zaczynamy!</button>
+                <button class="btn btn-secondary" v-on:click="$router.push('/testing')">Wstecz</button>
+                <button class="btn btn-primary" v-on:click="goToFlashcards()">Zaczynamy!</button>
             </div>
         </div>
     </div>
-    
-
 </template>
 
 <script>
     import categoriesChecker from '@/mixins/categoriesChecker';
+    import UndefinedEraOrArea from '@/components/UndefinedEraOrArea.vue';
+
     export default {
+        components: {
+            UndefinedEraOrArea
+        },
         computed: {
             area() {
                 return this.$store.state.categories.historyArea;
             },
             era() {
                 return this.$store.state.categories.historyEra;
-            },
-            allAreasRouteNamesString() {
-                return this.$store.getters['categories/allAreasRouteNamesString'];
-            },
-            allErasRouteNamesString() {
-                return this.$store.getters['categories/allErasRouteNamesString'];
-            },
-            validAreaName() {
-                return this.undefinedArea ? ["text-danger"] : ["text-black"]
-            },
-
-            validEraName() {
-                return this.undefinedEra ? ["text-danger"] : ["text-black"]
-            },
+            }
         },
         methods: {
             goToFlashcards() {

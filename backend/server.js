@@ -25,25 +25,31 @@ async function testConnection() {
 
 testConnection();
 
+app.get("/api/flashcards", async(req, res) => {
+    const { area, era } = req.query;
 
-// -----------------------------------------
-// 🔍 Testowy endpoint do sprawdzenia działania API
-// -----------------------------------------
-app.get("/test-db", async(req, res) => {
+    let sql = "SELECT * FROM flashcards WHERE 1=1";
+    const params = [];
+
+    if (area) {
+        sql += " AND area = ?";
+        params.push(area);
+    }
+
+    if (era) {
+        sql += " AND era = ?";
+        params.push(era);
+    }
+
     try {
-        const [rows] = await db.query("SELECT * FROM flashcards LIMIT 2");
-
-        res.json({
-            message: "Połączenie OK",
-            data: rows
-        });
-    } catch (err) {
-        res.status(500).json({
-            message: "Błąd w zapytaniu",
-            error: err.message
-        });
+        const [rows] = await db.query(sql, params);
+        res.json(rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Błąd zapytania do bazy" });
     }
 });
+
 
 
 // -----------------------------------------
