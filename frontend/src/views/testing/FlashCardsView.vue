@@ -67,13 +67,13 @@
                 return this.$store.state.categories.historyEra;
             },
             correctAnswer() {
-                return this.userAnswer === this.currentFlashcard?.correctAnswer;
+                return this.userAnswer === this.currentFlashcard?.correct_answer
             },
             answerButtonClass() {
                 return (answer) => {
                     if (!this.isChecked) return 'btn-outline-primary'  
 
-                    if (answer === this.currentFlashcard.correctAnswer) {
+                    if (answer === this.currentFlashcard.correct_answer) {
                         return 'btn-success'
                     }
 
@@ -108,10 +108,9 @@
             nextFlashcard() {
                 if (this.currentIndex < this.flashcards.length - 1) {
                     this.currentIndex++;
-                    this.userAnswer = "";    // reset odpowiedzi
-                    this.isChecked = false;  // reset przycisku Sprawdź
+                    this.userAnswer = "";
+                    this.isChecked = false;
                 } else {
-                    // koniec zestawu - np. powrót lub komunikat
                     alert("To była ostatnia fiszka w tym zestawie!");
                     this.$router.back();
                 }
@@ -126,8 +125,15 @@
                 area: this.$route.params.area,
                 era: this.$route.params.era
             });
+        },
 
-            console.log(this.currentFlashcard)
+        watch: {
+            currentFlashcard(newVal) {
+                if (newVal) {
+                    console.log("Aktualna fiszka:", newVal.question);
+                    console.log("Aktualna poprawna odpowiedź:", newVal.correct_answer);
+                }
+            }
         },
 
         mixins: [categoriesChecker]
