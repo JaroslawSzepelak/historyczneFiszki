@@ -45,9 +45,9 @@
         },
         data() {
             return {
-                userAnswer: "",
-                isChecked: false,
-                currentIndex: 0
+                userAnswer: sessionStorage.getItem('flashcardUserAnswer') || "",
+                isChecked: sessionStorage.getItem('flashcardIsChecked') === 'true',
+                currentIndex: Number(sessionStorage.getItem('currentFlashcardIndex')) || 0
             }
         },
         computed: {
@@ -99,6 +99,9 @@
             checkAnswer() {
                 this.isChecked = true;
 
+                sessionStorage.setItem('flashcardIsChecked', true);
+                sessionStorage.setItem('flashcardUserAnswer', this.userAnswer);
+
                 if(this.correctAnswer) {
                     console.log("Prawidłowa odpowiedź")
                 } else {
@@ -108,10 +111,22 @@
             nextFlashcard() {
                 if (this.currentIndex < this.flashcards.length - 1) {
                     this.currentIndex++;
+                    sessionStorage.setItem(
+                        'currentFlashcardIndex',
+                        this.currentIndex
+                    );
                     this.userAnswer = "";
                     this.isChecked = false;
+
+                    sessionStorage.removeItem('flashcardUserAnswer');
+                    sessionStorage.removeItem('flashcardIsChecked');
+
                 } else {
                     alert("To była ostatnia fiszka w tym zestawie!");
+                    sessionStorage.removeItem('currentFlashcardIndex');
+                    sessionStorage.removeItem('flashcardUserAnswer');
+                    sessionStorage.removeItem('flashcardIsChecked');
+
                     this.$router.back();
                 }
             }
@@ -132,6 +147,16 @@
                 if (newVal) {
                     console.log("Aktualna fiszka:", newVal.question);
                     console.log("Aktualna poprawna odpowiedź:", newVal.correct_answer);
+
+                    if (this.currentIndex >= this.flashcards.length) {
+                        this.currentIndex = 0;
+                        sessionStorage.setItem('currentFlashcardIndex', 0);
+                    }
+
+                    if (!sessionStorage.getItem('flashcardUserAnswer')) {
+                        this.userAnswer = "";
+                        this.isChecked = false;
+                    }
                 }
             }
         },
