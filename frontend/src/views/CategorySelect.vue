@@ -28,12 +28,7 @@
 export default {
   data() {
     return {
-      isTesting: false,
-      //allHistoryAreas: ["Polska", "Świat", "Wszystko"],
-      //allEras: ["Prehistoria", "Starożytność", "Średniowiecze", "Nowożytność", "XIX wiek", "XX wiek", "Współczesność"],
-      //historyArea: "",
-      //historyEra: ""
-
+      isTesting: false
     }
   },
 
