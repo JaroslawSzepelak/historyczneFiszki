@@ -5,9 +5,34 @@
     <undefined-era-or-area v-if="undefinedArea || undefinedEra" />
     <div v-else>
         <div class="row justify-content-md-center p-3">
-            <p class="col-6 fs-5"><span class="fw-bold">{{ era.name }}</span> - {{ era.description }}</p>
+            <h3 class="col-6 fs-5"><span class="fw-bold">{{ era.name }}</span> - {{ era.description }}</h3>
         </div>
-        <div class="d-flex justify-content-center gap-3 p-3">
+        <div class="row justify-content-md-center p-3">
+            <div class="border w-50 col-6 text-center p-4">
+                <h3 class="mb-4">Wybierz sposób nauki dla wybranej epoki historycznej:</h3>
+                <div class="d-flex justify-content-center gap-3 p-3">
+                    <button
+                        class="btn btn-primary btn-lg"
+                        @click="$router.push({
+                            name: 'LearningContent',
+                            params: { area: area.slug, era: era.slug }
+                        })"
+                        >
+                        Czytaj treści
+                    </button>
+                    <button
+                        class="btn btn-success btn-lg"
+                        @click="$router.push({
+                            name: 'FlashCards',
+                            params: { area: area.slug, era: era.slug }
+                        })"
+                        >
+                        Rozwiązuj testy
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-center gap-3 p-3 my-5">
             <button class="btn btn-secondary" v-on:click="$router.back()">Wstecz</button>
         </div>
     </div>
