@@ -7,7 +7,7 @@
                 <div class="border w-50 p-5 mt-5 text-center">
                     <h3 class="text-center">{{ currentFlashcard.question }}</h3>
                     <div class="form check d-flex justify-content-sm-center gap-4 m-5">
-                        <flashcard-answer-button v-for="(answer, i) in shuffledAnswers" v-bind:key="answer"
+                        <test-answer-button v-for="(answer, i) in shuffledAnswers" v-bind:key="answer"
                             v-model:user-answer="userAnswer" 
                             :user-answer="userAnswer"
                             :button-answer="answer"
@@ -27,20 +27,20 @@
             </div>
         </div>
         <div v-else class="text-center mt-5">
-            <strong>Ładowanie fiszek...</strong>
+            <strong>Ładowanie pytań...</strong>
         </div>
     </div>
 </template>
 
 <script>
     import categoriesChecker from '@/mixins/categoriesChecker';
-    import FlashcardAnswerButton from '@/components/FlashcardAnswerButton.vue';
+    import TestAnswerButton from '@/components/TestAnswerButton.vue';
     import UndefinedEraOrArea from '@/components/UndefinedEraOrArea.vue';
 
     export default {
 
         components: {
-            FlashcardAnswerButton,
+            TestAnswerButton,
             UndefinedEraOrArea
         },
         data() {

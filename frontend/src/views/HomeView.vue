@@ -4,7 +4,7 @@
     <h3 class="m-4">Chcesz się uczyć czy sprawdzić swoją wiedzę poprzez odpowiadanie na fiszki?</h3>
     <div class="btn-group">
       <router-link class="btn btn-primary btn-lg" v-bind:to="{name: 'category', params: { op: 'learning'}}">Nauka</router-link>
-      <router-link class="btn btn-primary btn-lg" v-bind:to="{name: 'category', params: { op: 'testing'}}">Fiszki</router-link>
+      <router-link class="btn btn-primary btn-lg" v-bind:to="{name: 'category', params: { op: 'flashcards'}}">Fiszki</router-link>
     </div>
   </div>
 </template>

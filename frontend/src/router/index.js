@@ -3,8 +3,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import CategorySelect from '@/views/CategorySelect.vue'
 import LearningMainView from '@/views/learning/MainView.vue'
-import TestingMainView from '@/views/testing/MainView.vue'
-import FlashCardsView from '@/views/testing/FlashCardsView.vue'
+import TestsMainView from '@/views/flashcards/MainView.vue'
+import TestView from '@/views/learning/TestView.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
 import NoAccess from '@/views/NoAccess.vue'
 import store from '@/store'
@@ -16,7 +16,7 @@ const routes = [{
         component: HomeView,
     },
     {
-        path: '/:op(learning|testing)',
+        path: '/:op(learning|flashcards)',
         name: 'category',
         component: CategorySelect
     },
@@ -25,13 +25,25 @@ const routes = [{
         component: LearningMainView
     },
     {
-        path: '/testing/:area/:era',
-        component: TestingMainView,
+        path: '/flashcards/:area/:era',
+        component: TestsMainView,
     },
     {
-        path: '/testing/:area/:era/flashcards',
+        path: '/learning/:area/:era/tests',
+        name: "Tests",
+        component: TestView,
+        beforeEnter: (to, from, next) => {
+            if (store.state.flashcards.accessible) {
+                next();
+            } else {
+                next('/no-access')
+            }
+        },
+    },
+    {
+        path: '/flashcards/:area/:era/flashcard',
         name: "Flashcards",
-        component: FlashCardsView,
+        component: TestView,
         beforeEnter: (to, from, next) => {
             if (store.state.flashcards.accessible) {
                 next();

@@ -42,7 +42,7 @@
         methods: {
             goToFlashcards() {
                 this.$store.commit("flashcards/setAccessible", true);
-                this.$router.push(`/testing/${this.$route.params.area}/${this.$route.params.era}/flashcards`);
+                this.$router.push(`/flashcards/${this.$route.params.area}/${this.$route.params.era}/flashcard`);
             },
         },
         created() {

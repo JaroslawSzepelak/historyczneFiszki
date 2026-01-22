@@ -87,7 +87,7 @@ export default {
   },
   
   created() {
-    if (this.$route.params.op == "testing") {
+    if (this.$route.params.op == "flashcards") {
         this.isTesting = true;
     } else {
         this.isTesting = false;

@@ -11,24 +11,8 @@
             <div class="border w-50 col-6 text-center p-4">
                 <h3 class="mb-4">Wybierz sposób nauki dla wybranej epoki historycznej:</h3>
                 <div class="d-flex justify-content-center gap-3 p-3">
-                    <button
-                        class="btn btn-primary btn-lg"
-                        @click="$router.push({
-                            name: 'LearningContent',
-                            params: { area: area.slug, era: era.slug }
-                        })"
-                        >
-                        Czytaj treści
-                    </button>
-                    <button
-                        class="btn btn-success btn-lg"
-                        @click="$router.push({
-                            name: 'FlashCards',
-                            params: { area: area.slug, era: era.slug }
-                        })"
-                        >
-                        Rozwiązuj testy
-                    </button>
+                    <button class="btn btn-primary btn-lg" v-on:click="goToReading()">Czytaj treści</button>
+                    <button class="btn btn-success btn-lg" v-on:click="goToTests()">Rozwiązuj testy</button>
                 </div>
             </div>
         </div>
@@ -52,6 +36,11 @@
             },
             era() {
                 return this.$store.state.categories.historyEra;
+            }
+        },
+        methods: {
+            goToTests() {
+                this.$router.push(`/learning/${this.$route.params.area}/${this.$route.params.era}/tests`);
             }
         },
         created() {
