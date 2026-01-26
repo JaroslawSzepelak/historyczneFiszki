@@ -5,6 +5,7 @@ import CategorySelect from '@/views/CategorySelect.vue'
 import LearningMainView from '@/views/learning/MainView.vue'
 import TestsMainView from '@/views/flashcards/MainView.vue'
 import TestView from '@/views/learning/TestView.vue'
+import FlashcardView from '@/views/flashcards/FlashcardView.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
 import NoAccess from '@/views/NoAccess.vue'
 import store from '@/store'
@@ -43,7 +44,7 @@ const routes = [{
     {
         path: '/flashcards/:area/:era/flashcard',
         name: "Flashcards",
-        component: TestView,
+        component: FlashcardView,
         beforeEnter: (to, from, next) => {
             if (store.state.flashcards.accessible) {
                 next();

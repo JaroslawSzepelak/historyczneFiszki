@@ -22,7 +22,7 @@
                 </div>
             </div>
             <div class="d-flex justify-content-center gap-3 m-5">
-                <button class="btn btn-secondary" v-on:click="$router.back()">Wstecz</button>
+                <button class="btn btn-secondary" v-on:click="goBack">Wstecz</button>
                 <button class="btn btn-primary" v-on:click="nextFlashcard" v-bind:disabled="!isChecked">Następne pytanie</button>
             </div>
         </div>
@@ -45,9 +45,9 @@
         },
         data() {
             return {
-                userAnswer: sessionStorage.getItem('flashcardUserAnswer') || "",
-                isChecked: sessionStorage.getItem('flashcardIsChecked') === 'true',
-                currentIndex: Number(sessionStorage.getItem('currentFlashcardIndex')) || 0
+                userAnswer: sessionStorage.getItem('testUserAnswer') || "",
+                isChecked: sessionStorage.getItem('testAnswerChecked') === 'true',
+                currentIndex: Number(sessionStorage.getItem('currentQuestionIndex')) || 0
             }
         },
         computed: {
@@ -99,8 +99,8 @@
             checkAnswer() {
                 this.isChecked = true;
 
-                sessionStorage.setItem('flashcardIsChecked', true);
-                sessionStorage.setItem('flashcardUserAnswer', this.userAnswer);
+                sessionStorage.setItem('testAnswerChecked', true);
+                sessionStorage.setItem('testUserAnswer', this.userAnswer);
 
                 if(this.correctAnswer) {
                     console.log("Prawidłowa odpowiedź")
@@ -111,24 +111,25 @@
             nextFlashcard() {
                 if (this.currentIndex < this.flashcards.length - 1) {
                     this.currentIndex++;
-                    sessionStorage.setItem(
-                        'currentFlashcardIndex',
-                        this.currentIndex
-                    );
+                    sessionStorage.setItem('currentQuestionIndex',this.currentIndex);
                     this.userAnswer = "";
                     this.isChecked = false;
 
-                    sessionStorage.removeItem('flashcardUserAnswer');
-                    sessionStorage.removeItem('flashcardIsChecked');
+                    sessionStorage.removeItem('testUserAnswer');
+                    sessionStorage.removeItem('testAnswerChecked');
 
                 } else {
                     alert("To była ostatnia fiszka w tym zestawie!");
-                    sessionStorage.removeItem('currentFlashcardIndex');
-                    sessionStorage.removeItem('flashcardUserAnswer');
-                    sessionStorage.removeItem('flashcardIsChecked');
+                    sessionStorage.removeItem('currentQuestionIndex');
+                    sessionStorage.removeItem('testUserAnswer');
+                    sessionStorage.removeItem('testAnswerChecked');
 
                     this.$router.back();
                 }
+            },
+
+            goBack() {
+                this.$router.back();
             }
         },
 
@@ -150,10 +151,10 @@
 
                     if (this.currentIndex >= this.flashcards.length) {
                         this.currentIndex = 0;
-                        sessionStorage.setItem('currentFlashcardIndex', 0);
+                        sessionStorage.setItem('currentQuestionIndex', 0);
                     }
 
-                    if (!sessionStorage.getItem('flashcardUserAnswer')) {
+                    if (!sessionStorage.getItem('testUserAnswer')) {
                         this.userAnswer = "";
                         this.isChecked = false;
                     }
