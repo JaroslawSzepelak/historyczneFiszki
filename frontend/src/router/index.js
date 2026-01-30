@@ -32,14 +32,7 @@ const routes = [{
     {
         path: '/learning/:area/:era/tests',
         name: "Tests",
-        component: TestView,
-        beforeEnter: (to, from, next) => {
-            if (store.state.flashcards.accessible) {
-                next();
-            } else {
-                next('/no-access')
-            }
-        },
+        component: TestView
     },
     {
         path: '/flashcards/:area/:era/flashcard',
