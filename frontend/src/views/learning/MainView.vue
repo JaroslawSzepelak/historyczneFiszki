@@ -52,14 +52,18 @@
 <script>
     import categoriesChecker from '@/mixins/categoriesChecker';
     import UndefinedEraOrArea from '@/components/UndefinedEraOrArea.vue';
+    import { useTestSession } from '@/composables/useTestSession';
 
     export default {
         components: {
             UndefinedEraOrArea
         },
-        data() {
+        setup() {
+            const { hasActiveSession, resetSession } = useTestSession();
+
             return {
-                testSessionActive: sessionStorage.getItem('currentQuestionIndex') !== null
+            hasActiveTestSession: hasActiveSession,
+            resetTestSession: resetSession
             };
         },
         computed: {
@@ -68,9 +72,6 @@
             },
             era() {
                 return this.$store.state.categories.historyEra;
-            },
-            hasActiveTestSession() {
-                return this.testSessionActive;
             }
         },
         methods: {
@@ -79,13 +80,6 @@
                 console.log(path);
                 this.$router.push(path);
             },
-            resetTestSession() {
-                sessionStorage.removeItem('currentQuestionIndex');
-                sessionStorage.removeItem('testAnswerChecked');
-                sessionStorage.removeItem('testUserAnswer');
-
-                this.testSessionActive = false;
-            }
         },
         created() {
             this.checkArea();

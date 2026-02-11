@@ -36,6 +36,7 @@
     import categoriesChecker from '@/mixins/categoriesChecker';
     import TestAnswerButton from '@/components/TestAnswerButton.vue';
     import UndefinedEraOrArea from '@/components/UndefinedEraOrArea.vue';
+    import { useTestSession } from '@/composables/useTestSession';
 
     export default {
 
@@ -43,19 +44,37 @@
             TestAnswerButton,
             UndefinedEraOrArea
         },
-        data() {
+          setup() {
+            const {
+            currentIndex,
+            isChecked,
+            userAnswer,
+            saveIndex,
+            saveAnswer,
+            markChecked,
+            resetAnswerState,
+            resetSession
+            } = useTestSession();
+
             return {
-                userAnswer: sessionStorage.getItem('testUserAnswer') || "",
-                isChecked: sessionStorage.getItem('testAnswerChecked') === 'true',
-                currentIndex: Number(sessionStorage.getItem('currentQuestionIndex')) || 0
-            }
+            currentIndex,
+            isChecked,
+            userAnswer,
+            saveIndex,
+            saveAnswer,
+            markChecked,
+            resetAnswerState,
+            resetSession
+            };
         },
         computed: {
             flashcards() {
                 return this.$store.state.flashcards.data;
             },
             currentFlashcard() {
-                return this.flashcards.length > 0 ? this.flashcards[this.currentIndex] : null;
+                return this.flashcards.length > 0 && this.currentIndex !== null
+                    ? this.flashcards[this.currentIndex]
+                    : null;
             },
             shuffledAnswers() {
                 return this.$store.getters['flashcards/shuffledAnswers'](this.currentIndex);
@@ -97,33 +116,20 @@
 
         methods: {
             checkAnswer() {
-                this.isChecked = true;
-
-                sessionStorage.setItem('testAnswerChecked', true);
-                sessionStorage.setItem('testUserAnswer', this.userAnswer);
-
-                if(this.correctAnswer) {
-                    console.log("Prawidłowa odpowiedź")
-                } else {
-                    console.log("Nieprawidłowa odpowiedź")
-                }
+                this.markChecked();
+                this.saveAnswer(this.userAnswer);
             },
             nextFlashcard() {
                 if (this.currentIndex < this.flashcards.length - 1) {
-                    this.currentIndex++;
-                    sessionStorage.setItem('currentQuestionIndex',this.currentIndex);
-                    this.userAnswer = "";
-                    this.isChecked = false;
+                    const nextIndex = this.currentIndex + 1;
 
-                    sessionStorage.removeItem('testUserAnswer');
-                    sessionStorage.removeItem('testAnswerChecked');
+                    this.saveIndex(nextIndex);
+                    this.resetAnswerState();
 
                 } else {
                     alert("To była ostatnia fiszka w tym zestawie!");
-                    sessionStorage.removeItem('currentQuestionIndex');
-                    sessionStorage.removeItem('testUserAnswer');
-                    sessionStorage.removeItem('testAnswerChecked');
 
+                    this.resetSession();
                     this.$router.back();
                 }
             },
@@ -146,18 +152,19 @@
         watch: {
             currentFlashcard(newVal) {
                 if (newVal) {
-                    console.log("Aktualna fiszka:", newVal.question);
-                    console.log("Aktualna poprawna odpowiedź:", newVal.correct_answer);
 
                     if (this.currentIndex >= this.flashcards.length) {
-                        this.currentIndex = 0;
-                        sessionStorage.setItem('currentQuestionIndex', 0);
+                        this.saveIndex(0);
                     }
 
-                    if (!sessionStorage.getItem('testUserAnswer')) {
-                        this.userAnswer = "";
-                        this.isChecked = false;
+                    if (!this.userAnswer) {
+                        this.resetAnswerState();
                     }
+                }
+            },
+            flashcards(newVal) {
+                if (newVal.length && this.currentIndex === null) {
+                    this.saveIndex(0);
                 }
             }
         },
