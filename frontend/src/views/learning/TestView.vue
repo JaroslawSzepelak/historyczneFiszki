@@ -16,7 +16,11 @@
                             :disabled="isChecked"
                         />
                     </div>
-                    <button @click="checkAnswer" class="btn btn-primary btn-lg">
+                    <button 
+                        @click="checkAnswer" 
+                        class="btn btn-primary btn-lg"
+                        :disabled="!hasSelectedAnswer"
+                    >
                         Sprawdź
                     </button>
                 </div>
@@ -33,6 +37,8 @@
 </template>
 
 <script>
+    import { computed } from 'vue';
+    import { useStore } from 'vuex';
     import categoriesChecker from '@/mixins/categoriesChecker';
     import TestAnswerButton from '@/components/TestAnswerButton.vue';
     import UndefinedEraOrArea from '@/components/UndefinedEraOrArea.vue';
@@ -44,37 +50,46 @@
             TestAnswerButton,
             UndefinedEraOrArea
         },
-          setup() {
+        setup() {
+
+            const store = useStore();
+
+            const flashcards = computed(() => 
+                store.state.flashcards.data
+            );
+
             const {
-            currentIndex,
-            isChecked,
-            userAnswer,
-            saveIndex,
-            saveAnswer,
-            markChecked,
-            resetAnswerState,
-            resetSession
-            } = useTestSession();
+                currentIndex,
+                isChecked,
+                userAnswer,
+                hasSelectedAnswer,
+                saveIndex,
+                saveAnswer,
+                markChecked,
+                resetAnswerState,
+                resetSession
+            } = useTestSession(flashcards);
 
             return {
-            currentIndex,
-            isChecked,
-            userAnswer,
-            saveIndex,
-            saveAnswer,
-            markChecked,
-            resetAnswerState,
-            resetSession
+                flashcards,
+                currentIndex,
+                isChecked,
+                userAnswer,
+                hasSelectedAnswer,
+                saveIndex,
+                saveAnswer,
+                markChecked,
+                resetAnswerState,
+                resetSession
             };
         },
         computed: {
-            flashcards() {
-                return this.$store.state.flashcards.data;
-            },
             currentFlashcard() {
-                return this.flashcards.length > 0 && this.currentIndex !== null
-                    ? this.flashcards[this.currentIndex]
-                    : null;
+                if (!this.flashcards.length) return null;
+                if (this.currentIndex === null) return null;
+                if (this.currentIndex >= this.flashcards.length) return null;
+
+                return this.flashcards[this.currentIndex];
             },
             shuffledAnswers() {
                 return this.$store.getters['flashcards/shuffledAnswers'](this.currentIndex);
@@ -116,15 +131,14 @@
 
         methods: {
             checkAnswer() {
-                this.markChecked();
                 this.saveAnswer(this.userAnswer);
+                this.markChecked();
             },
             nextFlashcard() {
                 if (this.currentIndex < this.flashcards.length - 1) {
                     const nextIndex = this.currentIndex + 1;
 
                     this.saveIndex(nextIndex);
-                    this.resetAnswerState();
 
                 } else {
                     alert("To była ostatnia fiszka w tym zestawie!");
@@ -147,26 +161,6 @@
                 area: this.$route.params.area,
                 era: this.$route.params.era
             });
-        },
-
-        watch: {
-            currentFlashcard(newVal) {
-                if (newVal) {
-
-                    if (this.currentIndex >= this.flashcards.length) {
-                        this.saveIndex(0);
-                    }
-
-                    if (!this.userAnswer) {
-                        this.resetAnswerState();
-                    }
-                }
-            },
-            flashcards(newVal) {
-                if (newVal.length && this.currentIndex === null) {
-                    this.saveIndex(0);
-                }
-            }
         },
 
         mixins: [categoriesChecker]

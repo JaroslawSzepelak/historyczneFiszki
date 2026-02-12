@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 
 const STORAGE_KEYS = {
     index: 'currentQuestionIndex',
@@ -6,8 +6,12 @@ const STORAGE_KEYS = {
     userAnswer: 'testUserAnswer'
 };
 
-export function useTestSession() {
-    // stan reaktywny inicjalizowany z sessionStorage
+export function useTestSession(flashcardsRef = null) {
+
+    /* =========================
+       STATE
+    ========================== */
+
     const currentIndex = ref(
         sessionStorage.getItem(STORAGE_KEYS.index) !== null ?
         Number(sessionStorage.getItem(STORAGE_KEYS.index)) :
@@ -22,10 +26,13 @@ export function useTestSession() {
         sessionStorage.getItem(STORAGE_KEYS.userAnswer) || ''
     );
 
-    // czy sesja testowa jest aktywna?
     const hasActiveSession = computed(() => currentIndex.value !== null);
 
-    /* ========= zapisy ========= */
+    const hasSelectedAnswer = computed(() => userAnswer.value !== '');
+
+    /* =========================
+       ACTIONS
+    ========================== */
 
     function saveIndex(index) {
         currentIndex.value = index;
@@ -55,6 +62,36 @@ export function useTestSession() {
         sessionStorage.removeItem(STORAGE_KEYS.index);
     }
 
+    /* =========================
+       INTERNAL LOGIC (z watchera)
+    ========================== */
+
+    if (flashcardsRef) {
+
+        // 1️⃣ Gdy załadują się flashcards → inicjalizuj index
+        watch(flashcardsRef, (newVal) => {
+
+            if (!newVal || !newVal.length) return;
+
+            if (currentIndex.value === null) {
+                saveIndex(0);
+            }
+
+            if (currentIndex.value >= newVal.length) {
+                saveIndex(0);
+            }
+
+        }, { immediate: true });
+
+
+        // 2️⃣ Gdy zmieni się pytanie → resetuj odpowiedź
+        watch(currentIndex, (newVal, oldVal) => {
+            if (newVal !== oldVal) {
+                resetAnswerState();
+            }
+        });
+    }
+
     return {
         // state
         currentIndex,
@@ -63,6 +100,7 @@ export function useTestSession() {
 
         // computed
         hasActiveSession,
+        hasSelectedAnswer,
 
         // actions
         saveIndex,
