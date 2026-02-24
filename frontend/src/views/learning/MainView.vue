@@ -50,42 +50,53 @@
 </template>
 
 <script>
-    import categoriesChecker from '@/mixins/categoriesChecker';
-    import UndefinedEraOrArea from '@/components/UndefinedEraOrArea.vue';
-    import { useTestSession } from '@/composables/useTestSession';
+import categoriesChecker from '@/mixins/categoriesChecker';
+import UndefinedEraOrArea from '@/components/UndefinedEraOrArea.vue';
+import { testSession } from '@/services/testSession';
 
-    export default {
-        components: {
-            UndefinedEraOrArea
-        },
-        setup() {
-            const { hasActiveSession, resetSession } = useTestSession();
+const session = testSession();
 
-            return {
-            hasActiveTestSession: hasActiveSession,
-            resetTestSession: resetSession
-            };
-        },
-        computed: {
-            area() {
-                return this.$store.state.categories.historyArea;
-            },
-            era() {
-                return this.$store.state.categories.historyEra;
-            }
-        },
-        methods: {
-            goToTests() {
-                let path = `/learning/${this.$route.params.area}/${this.$route.params.era}/tests`;
-                console.log(path);
-                this.$router.push(path);
-            },
-        },
-        created() {
-            this.checkArea();
-            this.checkEra();
+export default {
+    components: {
+        UndefinedEraOrArea
+    },
+
+    computed: {
+        area() {
+            return this.$store.state.categories.historyArea;
         },
 
-        mixins: [categoriesChecker]
-    }
+        era() {
+            return this.$store.state.categories.historyEra;
+        },
+
+        hasActiveTestSession() {
+            const state = session.getInitialState();
+            return state.currentIndex !== null;
+        }
+    },
+
+    methods: {
+        goToTests() {
+            const path = `/learning/${this.$route.params.area}/${this.$route.params.era}/tests`;
+            this.$router.push(path);
+        },
+
+        goToReading() {
+            const path = `/learning/${this.$route.params.area}/${this.$route.params.era}/reading`;
+            this.$router.push(path);
+        },
+
+        resetTestSession() {
+            session.resetSession();
+        }
+    },
+
+    created() {
+        this.checkArea();
+        this.checkEra();
+    },
+
+    mixins: [categoriesChecker]
+};
 </script>

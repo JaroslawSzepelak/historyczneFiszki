@@ -37,132 +37,149 @@
 </template>
 
 <script>
-    import { computed } from 'vue';
-    import { useStore } from 'vuex';
-    import categoriesChecker from '@/mixins/categoriesChecker';
-    import TestAnswerButton from '@/components/TestAnswerButton.vue';
-    import UndefinedEraOrArea from '@/components/UndefinedEraOrArea.vue';
-    import { useTestSession } from '@/composables/useTestSession';
+import categoriesChecker from '@/mixins/categoriesChecker';
+import TestAnswerButton from '@/components/TestAnswerButton.vue';
+import UndefinedEraOrArea from '@/components/UndefinedEraOrArea.vue';
+import { testSession } from '@/services/testSession';
 
-    export default {
+const session = testSession();
 
-        components: {
-            TestAnswerButton,
-            UndefinedEraOrArea
+export default {
+
+    components: {
+        TestAnswerButton,
+        UndefinedEraOrArea
+    },
+
+    data() {
+        return {
+            ...session.getInitialState()
+        };
+    },
+
+    computed: {
+        flashcards() {
+            return this.$store.state.flashcards.data;
         },
-        setup() {
 
-            const store = useStore();
+        currentFlashcard() {
+            if (!this.flashcards.length) return null;
+            if (this.currentIndex === null) return null;
+            if (this.currentIndex >= this.flashcards.length) return null;
 
-            const flashcards = computed(() => 
-                store.state.flashcards.data
-            );
-
-            const {
-                currentIndex,
-                isChecked,
-                userAnswer,
-                hasSelectedAnswer,
-                saveIndex,
-                saveAnswer,
-                markChecked,
-                resetAnswerState,
-                resetSession
-            } = useTestSession(flashcards);
-
-            return {
-                flashcards,
-                currentIndex,
-                isChecked,
-                userAnswer,
-                hasSelectedAnswer,
-                saveIndex,
-                saveAnswer,
-                markChecked,
-                resetAnswerState,
-                resetSession
-            };
+            return this.flashcards[this.currentIndex];
         },
-        computed: {
-            currentFlashcard() {
-                if (!this.flashcards.length) return null;
-                if (this.currentIndex === null) return null;
-                if (this.currentIndex >= this.flashcards.length) return null;
 
-                return this.flashcards[this.currentIndex];
-            },
-            shuffledAnswers() {
-                return this.$store.getters['flashcards/shuffledAnswers'](this.currentIndex);
-            },
-            area() {
-                return this.$store.state.categories.historyArea;
-            },
-            era() {
-                return this.$store.state.categories.historyEra;
-            },
-            correctAnswer() {
-                return this.userAnswer === this.currentFlashcard?.correct_answer
-            },
-            answerButtonClass() {
-                return (answer) => {
-                    if (!this.isChecked) return 'btn-outline-primary'  
+        shuffledAnswers() {
+            return this.$store.getters['flashcards/shuffledAnswers'](this.currentIndex);
+        },
 
-                    if (answer === this.currentFlashcard.correct_answer) {
-                        return 'btn-success'
-                    }
+        area() {
+            return this.$store.state.categories.historyArea;
+        },
 
-                    if (answer === this.userAnswer) {
-                        return 'btn-outline-danger'
-                    }
-                   /*
-                    if (answer === this.userAnswer && answer === this.flashcards[0].correctAnswer) {
-                        return 'btn-outline-success'
-                    }
+        era() {
+            return this.$store.state.categories.historyEra;
+        },
 
-                    if (answer === this.userAnswer && answer !== this.flashcards[0].correctAnswer) {
-                        return 'btn-outline-danger'
-                    }
-                        */
+        hasSelectedAnswer() {
+            return this.userAnswer !== '';
+        },
 
-                    return 'btn-outline-primary'
+        answerButtonClass() {
+            return (answer) => {
+                if (!this.isChecked) return 'btn-outline-primary'  
+
+                if (answer === this.currentFlashcard.correct_answer) {
+                    return 'btn-success'
                 }
+
+                if (answer === this.userAnswer) {
+                    return 'btn-outline-danger'
+                }
+                /*
+                if (answer === this.userAnswer && answer === this.flashcards[0].correctAnswer) {
+                    return 'btn-outline-success'
+                }
+
+                if (answer === this.userAnswer && answer !== this.flashcards[0].correctAnswer) {
+                    return 'btn-outline-danger'
+                }
+                    */
+
+                return 'btn-outline-primary'
+            }
+        }
+    },
+
+    watch: {
+        flashcards(newVal) {
+
+            if (!newVal.length) return;
+
+            if (this.currentIndex === null) {
+                this.currentIndex = 0;
+                session.saveIndex(0);
+            }
+
+            if (this.currentIndex >= newVal.length) {
+                this.currentIndex = 0;
+                session.saveIndex(0);
             }
         },
 
-        methods: {
-            checkAnswer() {
-                this.saveAnswer(this.userAnswer);
-                this.markChecked();
-            },
-            nextFlashcard() {
-                if (this.currentIndex < this.flashcards.length - 1) {
-                    const nextIndex = this.currentIndex + 1;
+        currentIndex(newVal, oldVal) {
+            if (newVal !== oldVal) {
+                this.resetAnswerState();
+            }
+        }
+    },
 
-                    this.saveIndex(nextIndex);
+    methods: {
+        checkAnswer() {
+            session.saveAnswer(this.userAnswer);
+            session.markChecked();
+            this.isChecked = true;
+        },
 
-                } else {
-                    alert("To była ostatnia fiszka w tym zestawie!");
-
-                    this.resetSession();
-                    this.$router.back();
-                }
-            },
-
-            goBack() {
+        nextFlashcard() {
+            if (this.currentIndex < this.flashcards.length - 1) {
+                this.currentIndex++;
+                session.saveIndex(this.currentIndex);
+            } else {
+                alert("To była ostatnia fiszka w tym zestawie!");
+                this.resetSession();
                 this.$router.back();
             }
         },
 
-        created() {
-            this.checkArea();
-            this.checkEra();
-
-            this.$store.dispatch('flashcards/fetchFlashcards', {
-                area: this.$route.params.area,
-                era: this.$route.params.era
-            });
+        resetAnswerState() {
+            this.userAnswer = '';
+            this.isChecked = false;
+            session.resetAnswerState();
         },
 
-        mixins: [categoriesChecker]
-    }
+        resetSession() {
+            this.currentIndex = null;
+            this.resetAnswerState();
+            session.resetSession();
+        },
+
+        goBack() {
+            this.$router.back();
+        }
+    },
+
+    created() {
+        this.checkArea();
+        this.checkEra();
+
+        this.$store.dispatch('flashcards/fetchFlashcards', {
+            area: this.$route.params.area,
+            era: this.$route.params.era
+        });
+    },
+
+    mixins: [categoriesChecker]
+};
 </script>
