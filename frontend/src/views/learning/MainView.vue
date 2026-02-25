@@ -27,7 +27,7 @@
 
                     <button
                         class="btn btn-outline-danger"
-                        @click="resetTestSession"
+                        @click="openConfirmModal"
                     >
                         Zakończ test
                     </button>
@@ -47,18 +47,39 @@
             <button class="btn btn-secondary" v-on:click="$router.back()">Wstecz</button>
         </div>
     </div>
+    <confirm-end-test-modal
+        :visible="showConfirmModal"
+        @cancel="showConfirmModal = false"
+        @confirm="handleConfirmEnd"
+    />
+
+    <test-ended-modal
+        :visible="showEndedModal"
+        @ok="handleFinalRedirect"
+    />
 </template>
 
 <script>
 import categoriesChecker from '@/mixins/categoriesChecker';
 import UndefinedEraOrArea from '@/components/UndefinedEraOrArea.vue';
 import { testSession } from '@/services/testSession';
+import ConfirmEndTestModal from '@/components/modals/ConfirmEndTestModal.vue';
+import TestEndedModal from '@/components/modals/TestEndedModal.vue';
 
 const session = testSession();
 
 export default {
     components: {
-        UndefinedEraOrArea
+        UndefinedEraOrArea,
+        ConfirmEndTestModal,
+        TestEndedModal
+    },
+
+    data() {
+        return {
+            showConfirmModal: false,
+            showEndedModal: false
+        };
     },
 
     computed: {
@@ -87,9 +108,23 @@ export default {
             this.$router.push(path);
         },
 
-        resetTestSession() {
+        openConfirmModal() {
+            this.showConfirmModal = true;
+        },
+
+        handleConfirmEnd() {
+            this.showConfirmModal = false;
+
             session.resetSession();
-        }
+
+            this.showEndedModal = true;
+        },
+
+        handleFinalRedirect() {
+            this.showEndedModal = false;
+
+            this.$router.push('/'); 
+        },
     },
 
     created() {
