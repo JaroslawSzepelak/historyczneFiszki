@@ -4,12 +4,11 @@
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Sesja zakończona</h5>
+            <h5 class="modal-title">{{ title }}</h5>
           </div>
 
           <div class="modal-body">
-            Sesja testowa została zakończona.
-            Nastąpi powrót do strony głównej.
+            {{ message }}
           </div>
 
           <div class="modal-footer">
@@ -28,7 +27,15 @@
 <script>
 export default {
   props: {
-    visible: Boolean
+    visible: Boolean,
+    title: {
+      type: String,
+      default: 'Sesja zakończona'
+    },
+    message: {
+      type: String,
+      default: 'Sesja testowa została zakończona. Nastąpi powrót do strony głównej.'
+    }
   },
   emits: ['ok']
 };

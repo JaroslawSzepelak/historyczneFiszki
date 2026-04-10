@@ -65,6 +65,9 @@
 <script>
 import categoriesChecker from '@/mixins/categoriesChecker';
 import UndefinedEraOrArea from '@/components/UndefinedEraOrArea.vue';
+import { flashcardSession } from '@/services/flashcardSession';
+
+const session = flashcardSession();
 
 export default {
     components: {
@@ -73,9 +76,7 @@ export default {
 
     data() {
         return {
-            currentIndex: Number(sessionStorage.getItem('flashcardIndex')) || 0,
-            hasAnswered: sessionStorage.getItem('flashcardHasAnswered') === 'true',
-            userChoice: sessionStorage.getItem('flashcardChoice') || null
+            ...session.getInitialState()
         };
     },
 
@@ -101,12 +102,11 @@ export default {
 
     methods: {
         handleAnswer(choice) {
-            // zapis wyboru użytkownika
             this.hasAnswered = true;
             this.userChoice = choice;
 
-            sessionStorage.setItem('flashcardHasAnswered', true);
-            sessionStorage.setItem('flashcardChoice', choice);
+            session.markAnswered();
+            session.saveChoice(choice);
 
             /*
             LOGIKA KOLEJKI – DO ZROBIENIA PÓŹNIEJ
@@ -120,29 +120,22 @@ export default {
         nextFlashcard() {
             if (this.currentIndex < this.flashcards.length - 1) {
                 this.currentIndex++;
+                session.saveIndex(this.currentIndex);
 
-                // zapis nowego indeksu
-                sessionStorage.setItem(
-                    'flashcardIndex',
-                    this.currentIndex
-                );
-
-                // reset stanu odpowiedzi
                 this.hasAnswered = false;
                 this.userChoice = null;
-
-                sessionStorage.removeItem('flashcardHasAnswered');
-                sessionStorage.removeItem('flashcardChoice');
+                session.resetAnswerState();
             } else {
                 alert("To była ostatnia fiszka w tym zestawie!");
-
-                // czyszczenie sesji nauki
-                sessionStorage.removeItem('flashcardIndex');
-                sessionStorage.removeItem('flashcardHasAnswered');
-                sessionStorage.removeItem('flashcardChoice');
-
+                this.resetSession();
                 this.$router.back();
             }
+        },
+        resetSession() {
+            this.currentIndex = null;
+            this.hasAnswered = false;
+            this.userChoice = null;
+            session.resetSession();
         }
     },
 
@@ -157,12 +150,25 @@ export default {
     },
 
     watch: {
+        flashcards(newVal) {
+            if (!newVal.length) return;
+
+            if (this.currentIndex === null) {
+                this.currentIndex = 0;
+                session.saveIndex(0);
+            }
+
+            if (this.currentIndex >= newVal.length) {
+                this.currentIndex = 0;
+                session.saveIndex(0);
+            }
+        },
         currentFlashcard(newVal) {
             if (newVal) {
                 // zabezpieczenie przed błędnym indeksem
                 if (this.currentIndex >= this.flashcards.length) {
                     this.currentIndex = 0;
-                    sessionStorage.setItem('flashcardIndex', 0);
+                    session.saveIndex(0);
                 }
             }
         }
