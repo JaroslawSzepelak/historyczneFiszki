@@ -1,14 +1,48 @@
 // server.js
 const express = require("express");
 const cors = require("cors");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
+const morgan = require("morgan");
 require("dotenv").config();
 
 const flashcardsRoutes = require("./routes/flashcards");
 const db = require("./db"); // <-- import puli połączeń
 
 const app = express();
-app.use(cors());
-app.use(express.json());
+const isProduction = process.env.NODE_ENV === "production";
+
+const corsOptions = {
+    origin: (origin, callback) => {
+        const allowedOrigins = (process.env.CORS_ORIGINS || "")
+            .split(",")
+            .map((item) => item.trim())
+            .filter(Boolean);
+
+        if (!origin || !allowedOrigins.length || allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+
+        return callback(new Error("Origin not allowed by CORS"));
+    },
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+};
+
+app.use(helmet());
+app.use(cors(corsOptions));
+app.use(express.json({ limit: "50kb" }));
+app.use(morgan(isProduction ? "combined" : "dev"));
+
+const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: Number(process.env.RATE_LIMIT_MAX || 300),
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: "Zbyt wiele zapytań. Spróbuj ponownie za chwilę." }
+});
+
+app.use("/api", apiLimiter);
 
 
 // -----------------------------------------
@@ -25,28 +59,16 @@ async function testConnection() {
 
 testConnection();
 
-app.get("/api/flashcards", async(req, res) => {
-    const { area, era } = req.query;
-
-    let sql = "SELECT * FROM flashcards WHERE 1=1";
-    const params = [];
-
-    if (area) {
-        sql += " AND area = ?";
-        params.push(area);
-    }
-
-    if (era) {
-        sql += " AND era = ?";
-        params.push(era);
-    }
-
+app.get("/api/health", async(_req, res, next) => {
     try {
-        const [rows] = await db.query(sql, params);
-        res.json(rows);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Błąd zapytania do bazy" });
+        await db.query("SELECT 1");
+        res.json({
+            ok: true,
+            service: "historyczne-fiszki-backend",
+            timestamp: new Date().toISOString()
+        });
+    } catch (err) {
+        next(err);
     }
 });
 
@@ -55,8 +77,33 @@ app.get("/api/flashcards", async(req, res) => {
 // -----------------------------------------
 // 📌 Endpointy główne aplikacji
 // -----------------------------------------
+app.use("/api/flashcards", flashcardsRoutes);
 app.use("/flashcards", flashcardsRoutes);
 
+app.use((_req, res) => {
+    res.status(404).json({ error: "Endpoint nie istnieje" });
+});
+
+app.use((err, _req, res, _next) => {
+    const status = err.status || 500;
+    const payload = {
+        error: err.message || "Wewnętrzny błąd serwera"
+    };
+
+    if (err.details) {
+        payload.details = err.details;
+    }
+
+    if (!isProduction) {
+        payload.stack = err.stack;
+    }
+
+    if (status >= 500) {
+        console.error(err);
+    }
+
+    res.status(status).json(payload);
+});
 
 // -----------------------------------------
 // 🚀 Start serwera
