@@ -30,7 +30,7 @@ export default {
         }
     },
     actions: {
-        loadAccesible(context) {
+        loadAccessible(context) {
             let accessibleValue = sessionStorage.getItem("flashcardAccessible");
             if (accessibleValue) {
                 context.commit("setAccessible", JSON.parse(accessibleValue));

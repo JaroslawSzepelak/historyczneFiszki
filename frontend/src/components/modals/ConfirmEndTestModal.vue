@@ -32,6 +32,7 @@
 export default {
   props: {
     visible: Boolean
-  }
+  },
+  emits: ['cancel', 'confirm']
 };
 </script>

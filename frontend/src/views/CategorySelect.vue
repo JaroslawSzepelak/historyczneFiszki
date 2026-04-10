@@ -5,14 +5,14 @@
         </h2>
         <div class="bg-light p-5">
             <h3 class="mb-4">Wybierz interesujący Cię obszar geograficzny:</h3>
-            <div v-for="(area, i) in allHistoryAreas" v-bind:key="area" class="form-check d-grid gap-2 col-2 mx-auto">
+            <div v-for="(area, i) in allHistoryAreas" v-bind:key="area.routeName" class="form-check d-grid gap-2 col-2 mx-auto">
               <input type="radio" class="btn-check" v-model="historyArea" v-bind:value="area" v-bind:id="'area' + i" autocomplete="off" v-on:change="resetHistoryEra"/>
               <label class="btn btn-outline-primary btn-lg mb-2" v-bind:for="'area' + i">{{ area.name }}</label>
             </div>
         </div>
         <div v-if="showEraContainer" class="p-5">
             <h3 class="mb-4">Wybierz interesującą Cię epokę historyczną:</h3>
-            <div v-for="(era, i) in activeEras" v-bind:key="era.name" class="form-check d-grid gap-2 col-2 mx-auto">
+            <div v-for="(era, i) in activeEras" v-bind:key="era.routeName" class="form-check d-grid gap-2 col-2 mx-auto">
               <input type="radio" class="btn-check" v-model="historyEra" v-bind:value="era" v-bind:id="'era' + i" autocomplete="off"/>
               <label class="btn btn-outline-primary btn-lg mb-2" v-bind:for="'era' + i">{{ era.name }}</label>
             </div>

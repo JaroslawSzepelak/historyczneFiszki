@@ -17,11 +17,9 @@ export default {
     }
   },
 
-  beforeRouteLeave(to, from, next) {
+  beforeRouteLeave(to) {
     if (to.name == "Flashcards") {
-      next('/no-access');
-    } else {
-      next();
+      return '/no-access';
     }
   }
 }

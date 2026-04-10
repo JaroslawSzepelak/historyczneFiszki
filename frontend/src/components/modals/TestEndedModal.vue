@@ -29,6 +29,7 @@
 export default {
   props: {
     visible: Boolean
-  }
+  },
+  emits: ['ok']
 };
 </script>

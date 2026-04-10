@@ -28,10 +28,13 @@
             },
 
             created() {
-                  this.$store.dispatch("flashcards/loadAccesible");
-                  this.$watch('flashcardsAccessible', () => {
-                        this.$store.dispatch("flashcards/storeAccessible")
-                  })
+                  this.$store.dispatch("flashcards/loadAccessible");
+            },
+
+            watch: {
+                  flashcardsAccessible() {
+                        this.$store.dispatch("flashcards/storeAccessible");
+                  }
             }
       }
 </script>

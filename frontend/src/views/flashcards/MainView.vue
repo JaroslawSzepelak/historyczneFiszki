@@ -16,7 +16,7 @@
         <div class="row text-center mt-5">
             <h4>Przejdź do zestawu fiszek lub wróć aby zmienić epokę historyczną lub obszar geograficzny</h4>
             <div class="d-flex justify-content-center gap-3 p-3">
-                <button class="btn btn-secondary" v-on:click="$router.push('/testing')">Wstecz</button>
+                <button class="btn btn-secondary" v-on:click="$router.back()">Wstecz</button>
                 <button class="btn btn-primary" v-on:click="goToFlashcards()">Zaczynamy!</button>
             </div>
         </div>

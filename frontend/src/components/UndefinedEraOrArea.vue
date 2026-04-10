@@ -15,7 +15,7 @@
         <div class="row text-center mt-5">
             <h4>Popraw adres URL ręcznie lub wróć opcji wyboru epoki historycznej i obszaru geograficznego. Możesz również wrócić do strony głownej</h4>
             <div class="d-flex justify-content-center gap-3 p-3">
-            <button class="btn btn-primary" v-on:click="$router.push('/testing')">Powrót do opcji wyboru</button>
+            <button class="btn btn-primary" v-on:click="$router.push('/learning')">Powrót do opcji wyboru</button>
             <button class="btn btn-secondary" v-on:click="$router.push('/')">Powrót do strony głównej</button>
             </div>
         </div>

@@ -112,29 +112,6 @@ export default {
         }
     },
 
-    watch: {
-        flashcards(newVal) {
-
-            if (!newVal.length) return;
-
-            if (this.currentIndex === null) {
-                this.currentIndex = 0;
-                session.saveIndex(0);
-            }
-
-            if (this.currentIndex >= newVal.length) {
-                this.currentIndex = 0;
-                session.saveIndex(0);
-            }
-        },
-
-        currentIndex(newVal, oldVal) {
-            if (newVal !== oldVal) {
-                this.resetAnswerState();
-            }
-        }
-    },
-
     methods: {
         checkAnswer() {
             session.saveAnswer(this.userAnswer);
@@ -178,6 +155,29 @@ export default {
             area: this.$route.params.area,
             era: this.$route.params.era
         });
+    },
+
+    watch: {
+        flashcards(newVal) {
+
+            if (!newVal.length) return;
+
+            if (this.currentIndex === null) {
+                this.currentIndex = 0;
+                session.saveIndex(0);
+            }
+
+            if (this.currentIndex >= newVal.length) {
+                this.currentIndex = 0;
+                session.saveIndex(0);
+            }
+        },
+
+        currentIndex(newVal, oldVal) {
+            if (newVal !== oldVal) {
+                this.resetAnswerState();
+            }
+        }
     },
 
     mixins: [categoriesChecker]
