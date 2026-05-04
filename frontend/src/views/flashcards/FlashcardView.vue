@@ -136,6 +136,7 @@ export default {
             this.hasAnswered = false;
             this.userChoice = null;
             session.resetSession();
+            this.$store.dispatch("flashcards/resetAccessible");
         }
     },
 

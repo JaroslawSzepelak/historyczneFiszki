@@ -42,7 +42,8 @@ export default {
         },
 
         resetAccessible(context) {
-            sessionStorage.setItem("flashcardAccessible", false);
+            context.commit("setAccessible", false);
+            sessionStorage.removeItem("flashcardAccessible");
         },
         async fetchFlashcards({ commit }, { area, era }) {
             try {

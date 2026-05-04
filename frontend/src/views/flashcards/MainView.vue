@@ -102,6 +102,7 @@
             handleConfirmEnd() {
                 this.showConfirmModal = false;
                 session.resetSession();
+                this.$store.dispatch("flashcards/resetAccessible");
                 this.showEndedModal = true;
             },
             handleFinalRedirect() {
