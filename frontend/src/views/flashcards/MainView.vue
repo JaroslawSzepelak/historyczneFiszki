@@ -1,45 +1,52 @@
 <template>
+    <div class="flashcards-main">
     <div class="row">
-        <h2 class=" bg-primary text-center text-white p-3">Główny komponent rozwiązywania testów</h2>
+        <h2 class=" bg-primary text-center text-white p-3">Fiszki</h2>
     </div>
     <undefined-era-or-area v-if="undefinedArea || undefinedEra" />
-    <div v-else>
-        <div class="row p-2 mb-5">
+    <div v-else class="container py-4 py-lg-5">
+        <div class="row p-2 mb-4">
             <h3 class="text-center">Pytania będą dotyczyć wybranego przez Ciebie obszaru, czyli: <span class="fw-bold">{{ area.name }}</span>. Dodatkowo wybrałeś grupę fiszek z następującej epoki: <span class="fw-bold">{{ era.name }}</span></h3>
         </div>
-        <div class="row justify-content-sm-center text-white">
-            <div class="bg-info w-50 fs-5 p-5">
-                <h4>Krótko o epoce:</h4>
-                <p > {{ era.description }}</p>
-            </div>
-        </div>
-        <div v-if="hasActiveFlashcardSession" class="row justify-content-md-center p-3 mt-4">
-            <div class="border border-warning w-50 col-6 text-center p-4">
-                <h3 class="mb-3 text-warning">
-                    Masz aktywną sesję fiszek
-                </h3>
-                <p class="fs-5">
-                    Nie ukończyłeś jeszcze rozpoczętej sesji fiszek dla tej epoki.
-                </p>
-                <div class="d-flex justify-content-center gap-3 mt-4">
-                    <button class="btn btn-warning btn-lg" @click="goToFlashcards">
-                        Wróć do fiszek
-                    </button>
-                    <button class="btn btn-outline-danger" @click="openConfirmModal">
-                        Zakończ sesję
-                    </button>
+        <div class="row justify-content-center align-items-stretch mb-4">
+            
+            <!-- LEWA STRONA -->
+            <div class="col-12 col-lg-5 text-white mb-3 mb-lg-0">
+                <div class="info-card h-100 fs-5 p-4 p-lg-5">
+                    <h4>Krótko o epoce:</h4>
+                    <p>{{ era.description }}</p>
                 </div>
             </div>
-        </div>
-        <div v-else class="row text-center mt-5">
-            <h4>Przejdź do zestawu fiszek lub wróć aby zmienić epokę historyczną lub obszar geograficzny</h4>
-            <div class="d-flex justify-content-center gap-3 p-3">
-                <button class="btn btn-secondary" v-on:click="$router.back()">Wstecz</button>
-                <button class="btn btn-primary" v-on:click="goToFlashcards()">Zaczynamy!</button>
+
+            <!-- PRAWA STRONA -->
+            <div class="col-12 col-lg-5">
+                
+                <div v-if="hasActiveFlashcardSession" class="active-session-card border border-warning text-center p-4 p-lg-5 h-100">
+                    <h3 class="mb-3 text-warning">
+                        Masz aktywną sesję fiszek
+                    </h3>
+                    <p class="fs-5">
+                        Nie ukończyłeś jeszcze rozpoczętej sesji fiszek dla tej epoki.
+                    </p>
+                    <div class="d-flex justify-content-center gap-3 mt-4">
+                        <button class="btn btn-warning btn-lg action-btn" @click="goToFlashcards">
+                            Wróć do fiszek
+                        </button>
+                        <button class="btn btn-outline-danger action-btn" @click="openConfirmModal">
+                            Zakończ sesję
+                        </button>
+                    </div>
+                </div>
+                <div v-else class="start-card text-center p-4 p-lg-5 h-100 d-flex flex-column justify-content-center align-items-center">
+                    <h4>
+                        Przejdź do zestawu fiszek lub wróć aby zmienić epokę historyczną lub obszar geograficzny
+                    </h4>
+                    <div class="d-flex flex-column flex-md-row justify-content-center gap-3 p-3 mt-5">
+                        <button class="btn btn-secondary action-btn" @click="$router.back()">Wróć</button>
+                        <button class="btn btn-primary action-btn" @click="goToFlashcards()">Przejdź do fiszek</button>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="d-flex justify-content-center gap-3 p-3 my-5">
-            <button class="btn btn-secondary" v-on:click="$router.back()">Wstecz</button>
         </div>
     </div>
     <confirm-end-test-modal
@@ -56,6 +63,7 @@
         message="Sesja fiszek została zakończona. Nastąpi powrót do strony głównej."
         @ok="handleFinalRedirect"
     />
+    </div>
 </template>
 
 <script>
@@ -118,3 +126,40 @@
         mixins: [categoriesChecker]
     }
 </script>
+
+<style scoped>
+.flashcards-main {
+    background: linear-gradient(180deg, #f8fbff 0%, #ffffff 42%);
+    min-height: calc(100vh - 160px);
+}
+
+.info-card {
+    background: #0dcaf0;
+    border-radius: 1rem;
+    box-shadow: 0 12px 30px rgba(13, 202, 240, 0.24);
+}
+
+.active-session-card,
+.start-card {
+    background: #ffffff;
+    border-radius: 1rem;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+}
+
+.action-btn {
+    min-width: 170px;
+    min-height: 46px;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .flashcards-main {
+        min-height: auto;
+    }
+
+    .action-btn {
+        width: 100%;
+        min-width: 0;
+    }
+}
+</style>
