@@ -4,9 +4,11 @@ const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const morgan = require("morgan");
+const cookieParser = require("cookie-parser");
 require("dotenv").config();
 
 const flashcardsRoutes = require("./routes/flashcards");
+const authRoutes = require("./routes/auth");
 const db = require("./db"); // <-- import puli połączeń
 
 const app = express();
@@ -26,11 +28,13 @@ const corsOptions = {
         return callback(new Error("Origin not allowed by CORS"));
     },
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"]
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true
 };
 
 app.use(helmet());
 app.use(cors(corsOptions));
+app.use(cookieParser());
 app.use(express.json({ limit: "50kb" }));
 app.use(morgan(isProduction ? "combined" : "dev"));
 
@@ -77,6 +81,7 @@ app.get("/api/health", async(_req, res, next) => {
 // -----------------------------------------
 // 📌 Endpointy główne aplikacji
 // -----------------------------------------
+app.use("/api/auth", authRoutes);
 app.use("/api/flashcards", flashcardsRoutes);
 app.use("/flashcards", flashcardsRoutes);
 
