@@ -8,6 +8,8 @@ import TestView from '@/views/learning/TestView.vue'
 import FlashcardView from '@/views/flashcards/FlashcardView.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
 import NoAccess from '@/views/NoAccess.vue'
+import LoginView from '@/views/LoginView.vue'
+import AdminLoginView from '@/views/AdminLoginView.vue'
 import store from '@/store'
 
 const routes = [{
@@ -47,14 +49,26 @@ const routes = [{
         },
     },
     {
-        path: '/:pathMatch(.*)*',
-        name: "NotFound",
-        component: NotFoundView
+        path: '/login',
+        name: 'login',
+        component: LoginView,
+        meta: { isPublic: true }
+    },
+    {
+        path: '/admin-login',
+        name: 'admin-login',
+        component: AdminLoginView,
+        meta: { isPublic: true }
     },
     {
         path: '/no-access',
         name: "NoAccess",
         component: NoAccess
+    },
+    {
+        path: '/:pathMatch(.*)*',
+        name: "NotFound",
+        component: NotFoundView
     },
 ]
 
@@ -64,10 +78,28 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-    if (to.path == '/testing/polska/prehistoria' || to.path == '/testing/polska/starozytnosc') next({ name: "NotFound" })
-    else {
-        next()
+    const isAuthenticated = store.getters['auth/isAuthenticated']
+    const isAdmin = store.getters['auth/isAdmin']
+    const requiresAdmin = to.matched.some(record => record.meta?.requiresAdmin)
+
+    // Check if route requires admin access
+    if (requiresAdmin && !isAuthenticated) {
+        next('/admin-login')
+        return
     }
+
+    if (requiresAdmin && !isAdmin) {
+        next('/no-access')
+        return
+    }
+
+    // Keep existing test paths logic
+    if (to.path == '/testing/polska/prehistoria' || to.path == '/testing/polska/starozytnosc') {
+        next({ name: "NotFound" })
+        return
+    }
+
+    next()
 })
 
 export default router

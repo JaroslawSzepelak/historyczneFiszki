@@ -5,4 +5,12 @@ import store from './store'
 import "bootstrap/dist/css/bootstrap.min.css"
 import "font-awesome/css/font-awesome.min.css"
 
-createApp(App).use(store).use(router).mount('#app')
+const app = createApp(App)
+app.use(store).use(router)
+
+// Check auth status on app init
+store.dispatch('auth/checkAuth').catch(() => {
+    // Ignore error if not authenticated
+})
+
+app.mount('#app')

@@ -1,0 +1,135 @@
+<template>
+  <div class="admin-login-view">
+    <div class="container py-5">
+      <div class="row justify-content-center">
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="card shadow border-warning">
+            <div class="card-header bg-warning text-white text-center">
+              <h5 class="mb-0">
+                <i class="fas fa-shield-alt me-2"></i>
+                Panel Administratora
+              </h5>
+            </div>
+            <div class="card-body p-4">
+              <h2 class="card-title text-center mb-4">Logowanie administratora</h2>
+
+              <form @submit.prevent="handleLogin">
+                <div class="mb-3">
+                  <label for="email" class="form-label">Email administratora</label>
+                  <input
+                    type="email"
+                    id="email"
+                    v-model="form.email"
+                    class="form-control"
+                    :class="{ 'is-invalid': error }"
+                    required
+                    placeholder="admin@historycznefiszki.local"
+                  >
+                </div>
+
+                <div class="mb-3">
+                  <label for="password" class="form-label">Hasło</label>
+                  <input
+                    type="password"
+                    id="password"
+                    v-model="form.password"
+                    class="form-control"
+                    :class="{ 'is-invalid': error }"
+                    required
+                    placeholder="Wpisz hasło administratora"
+                  >
+                </div>
+
+                <div v-if="error" class="alert alert-danger mb-3">
+                  {{ error }}
+                </div>
+
+                <button
+                  type="submit"
+                  class="btn btn-warning w-100 mb-3"
+                  :disabled="loading"
+                >
+                  <span v-if="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                  {{ loading ? 'Logowanie...' : 'Zaloguj się jako administrator' }}
+                </button>
+
+                <div class="text-center">
+                  <router-link to="/login" class="text-decoration-none">
+                    Powrót do logowania użytkownika
+                  </router-link>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'AdminLoginView',
+  data() {
+    return {
+      form: {
+        email: 'admin@historycznefiszki.local',
+        password: ''
+      }
+    }
+  },
+  computed: {
+    loading() {
+      return this.$store.getters['auth/loading']
+    },
+    error() {
+      return this.$store.getters['auth/error']
+    }
+  },
+  methods: {
+    async handleLogin() {
+      try {
+        const user = await this.$store.dispatch('auth/login', this.form)
+
+        if (!user.isAdmin) {
+          this.$store.commit('auth/setError', 'To konto nie ma uprawnień administratora')
+          return
+        }
+
+        this.$router.push('/admin') // Można zmienić na odpowiednią ścieżkę admina
+      } catch (error) {
+        // Error is handled in store
+      }
+    }
+  },
+  mounted() {
+    // Clear any previous errors
+    this.$store.dispatch('auth/clearError')
+  }
+}
+</script>
+
+<style scoped>
+.admin-login-view {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.card {
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.card-header {
+  border-radius: 10px 10px 0 0 !important;
+  border: none;
+}
+
+.card-title {
+  color: #495057;
+  font-weight: 600;
+}
+</style>
