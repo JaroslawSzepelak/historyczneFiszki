@@ -9,6 +9,7 @@ require("dotenv").config();
 
 const flashcardsRoutes = require("./routes/flashcards");
 const authRoutes = require("./routes/auth");
+const ensureAdminExists = require("./middleware/ensureAdmin");
 const db = require("./db"); // <-- import puli połączeń
 
 const app = express();
@@ -62,6 +63,7 @@ async function testConnection() {
 }
 
 testConnection();
+ensureAdminExists();
 
 app.get("/api/health", async(_req, res, next) => {
     try {
