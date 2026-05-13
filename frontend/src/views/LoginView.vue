@@ -1,14 +1,14 @@
 <template>
   <div class="login-view">
-    <div class="container py-5">
+    <div class="container py-3">
       <div class="row justify-content-center">
         <div class="col-12 col-md-6 col-lg-4">
           <div class="card shadow">
-            <div class="card-body p-4">
-              <h2 class="card-title text-center mb-4">Logowanie</h2>
+            <div class="card-body p-5">
+              <h2 class="card-title text-center mb-5">Logowanie</h2>
 
               <form @submit.prevent="handleLogin">
-                <div class="mb-3">
+                <div class="mb-4">
                   <label for="email" class="form-label">Email</label>
                   <input
                     type="email"
@@ -21,7 +21,7 @@
                   >
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-4">
                   <label for="password" class="form-label">Hasło</label>
                   <input
                     type="password"
@@ -34,13 +34,13 @@
                   >
                 </div>
 
-                <div v-if="error" class="alert alert-danger mb-3">
+                <div v-if="error" class="alert alert-danger mb-4">
                   {{ error }}
                 </div>
 
                 <button
                   type="submit"
-                  class="btn btn-primary w-100 mb-3"
+                  class="btn btn-primary w-100 mb-4"
                   :disabled="loading"
                 >
                   <span v-if="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
@@ -105,10 +105,9 @@ export default {
 
 <style scoped>
 .login-view {
-  min-height: 100vh;
+  padding-top: 50px;
   display: flex;
   align-items: center;
-  background-color: #f8f9fa;
 }
 
 .card {

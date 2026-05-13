@@ -2,7 +2,7 @@ const userService = require('../services/userService');
 const db = require('../db');
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@historycznefiszki.local';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123$';
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
 
 async function ensureAdminExists() {

@@ -22,6 +22,11 @@ const corsOptions = {
             .map((item) => item.trim())
             .filter(Boolean);
 
+        // W development mode, automatycznie pozwalamy na localhost:8080
+        if (!isProduction && (!origin || origin === 'http://localhost:8080' || origin === 'http://localhost:8081')) {
+            return callback(null, true);
+        }
+
         if (!origin || !allowedOrigins.length || allowedOrigins.includes(origin)) {
             return callback(null, true);
         }

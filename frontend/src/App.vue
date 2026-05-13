@@ -24,6 +24,10 @@
             </div>
       </nav>
       <router-view></router-view>
+      <LogoutSuccessModal
+        :visible="showLogoutModal"
+        @ok="handleLogoutModalOk"
+      />
       <footer class="position-absolute bottom-0 w-100">
             <div class="text-center bg-light p-4">
                   <h5>© 2025 Jarosław Szepelak</h5>
@@ -32,7 +36,17 @@
 </template>
 
 <script>
+import LogoutSuccessModal from '@/components/modals/LogoutSuccessModal.vue'
+
       export default {
+            components: {
+                  LogoutSuccessModal
+            },
+            data() {
+                  return {
+                        showLogoutModal: false
+                  }
+            },
             computed: {
                   flashcardsAccessible() {
                         return this.$store.state.flashcards.accessible;
@@ -62,10 +76,14 @@
                   async handleLogout() {
                         try {
                               await this.$store.dispatch('auth/logout');
-                              this.$router.push('/');
+                              this.showLogoutModal = true;
                         } catch (error) {
                               console.error('Logout failed:', error);
                         }
+                  },
+                  handleLogoutModalOk() {
+                        this.showLogoutModal = false;
+                        window.location.href = '/';
                   }
             }
       }

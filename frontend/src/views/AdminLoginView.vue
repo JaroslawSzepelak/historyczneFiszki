@@ -1,20 +1,20 @@
 <template>
   <div class="admin-login-view">
-    <div class="container py-5">
+    <div class="container py-3">
       <div class="row justify-content-center">
         <div class="col-12 col-md-6 col-lg-4">
           <div class="card shadow border-warning">
-            <div class="card-header bg-warning text-white text-center">
-              <h5 class="mb-0">
+            <div class="card-header bg-warning text-white text-center p-3">
+              <h4 class="mb-0">
                 <i class="fas fa-shield-alt me-2"></i>
                 Panel Administratora
-              </h5>
+              </h4>
             </div>
-            <div class="card-body p-4">
-              <h2 class="card-title text-center mb-4">Logowanie administratora</h2>
+            <div class="card-body p-5">
+              <h2 class="card-title text-center mb-5">Logowanie administratora</h2>
 
               <form @submit.prevent="handleLogin">
-                <div class="mb-3">
+                <div class="mb-4">
                   <label for="email" class="form-label">Email administratora</label>
                   <input
                     type="email"
@@ -27,7 +27,7 @@
                   >
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-4">
                   <label for="password" class="form-label">Hasło</label>
                   <input
                     type="password"
@@ -40,13 +40,13 @@
                   >
                 </div>
 
-                <div v-if="error" class="alert alert-danger mb-3">
+                <div v-if="error" class="alert alert-danger mb-4">
                   {{ error }}
                 </div>
 
                 <button
                   type="submit"
-                  class="btn btn-warning w-100 mb-3"
+                  class="btn btn-warning w-100 mb-4"
                   :disabled="loading"
                 >
                   <span v-if="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
@@ -111,10 +111,9 @@ export default {
 
 <style scoped>
 .admin-login-view {
-  min-height: 100vh;
+  padding-top: 50px;
   display: flex;
   align-items: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .card {
