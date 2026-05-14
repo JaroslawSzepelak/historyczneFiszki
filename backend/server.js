@@ -9,6 +9,7 @@ require("dotenv").config();
 
 const flashcardsRoutes = require("./routes/flashcards");
 const authRoutes = require("./routes/auth");
+const adminRoutes = require("./routes/admin");
 const ensureAdminExists = require("./middleware/ensureAdmin");
 const db = require("./db"); // <-- import puli połączeń
 
@@ -89,6 +90,7 @@ app.get("/api/health", async(_req, res, next) => {
 // 📌 Endpointy główne aplikacji
 // -----------------------------------------
 app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/api/flashcards", flashcardsRoutes);
 app.use("/flashcards", flashcardsRoutes);
 
