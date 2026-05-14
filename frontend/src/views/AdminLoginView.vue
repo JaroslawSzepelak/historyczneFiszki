@@ -84,6 +84,12 @@ export default {
     },
     error() {
       return this.$store.getters['auth/error']
+    },
+    isAuthenticated() {
+      return this.$store.getters['auth/isAuthenticated']
+    },
+    isAdmin() {
+      return this.$store.getters['auth/isAdmin']
     }
   },
   methods: {
@@ -96,15 +102,17 @@ export default {
           return
         }
 
-        this.$router.push('/admin') // Można zmienić na odpowiednią ścieżkę admina
+        this.$router.push('/admin')
       } catch (error) {
         // Error is handled in store
       }
     }
   },
-  mounted() {
-    // Clear any previous errors
+  created() {
     this.$store.dispatch('auth/clearError')
+    if (this.isAuthenticated) {
+      this.$router.replace(this.isAdmin ? '/admin' : '/')
+    }
   }
 }
 </script>
@@ -123,8 +131,7 @@ export default {
 }
 
 .card-header {
-  border-radius: 10px 10px 0 0 !important;
-  border: none;
+  border-radius: 10px 10px 0 0;
 }
 
 .card-title {

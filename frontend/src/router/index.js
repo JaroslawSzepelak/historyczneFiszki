@@ -10,6 +10,10 @@ import NotFoundView from '@/views/NotFoundView.vue'
 import NoAccess from '@/views/NoAccess.vue'
 import LoginView from '@/views/LoginView.vue'
 import AdminLoginView from '@/views/AdminLoginView.vue'
+import AdminDashboardView from '@/views/admin/AdminDashboardView.vue'
+import AdminWelcomeView from '@/views/admin/AdminWelcomeView.vue'
+import AdminUsersView from '@/views/admin/AdminUsersView.vue'
+import UserEditView from '@/views/admin/UserEditView.vue'
 import store from '@/store'
 
 const routes = [{
@@ -61,6 +65,29 @@ const routes = [{
         meta: { isPublic: true }
     },
     {
+        path: '/admin',
+        component: AdminDashboardView,
+        meta: { requiresAdmin: true },
+        children: [
+            {
+                path: '',
+                name: 'admin-home',
+                component: AdminWelcomeView
+            },
+            {
+                path: 'users',
+                name: 'admin-users',
+                component: AdminUsersView
+            },
+            {
+                path: 'users/:id/edit',
+                name: 'admin-user-edit',
+                component: UserEditView,
+                props: true
+            }
+        ]
+    },
+    {
         path: '/no-access',
         name: "NoAccess",
         component: NoAccess
@@ -81,8 +108,19 @@ router.beforeEach((to, from, next) => {
     const isAuthenticated = store.getters['auth/isAuthenticated']
     const isAdmin = store.getters['auth/isAdmin']
     const requiresAdmin = to.matched.some(record => record.meta?.requiresAdmin)
+    const isPublic = to.matched.some(record => record.meta?.isPublic)
 
-    // Check if route requires admin access
+    if (isPublic && isAuthenticated) {
+        if (to.name === 'admin-login') {
+            next(isAdmin ? '/admin' : '/')
+            return
+        }
+        if (to.name === 'login') {
+            next(isAdmin ? '/admin' : '/')
+            return
+        }
+    }
+
     if (requiresAdmin && !isAuthenticated) {
         next('/admin-login')
         return
