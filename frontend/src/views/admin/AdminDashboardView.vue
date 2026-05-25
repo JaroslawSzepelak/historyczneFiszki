@@ -29,6 +29,12 @@ export default {
   components: {
     AdminSidebar
   },
+  beforeMount() {
+    const lastView = sessionStorage.getItem('adminLastView')
+    if (lastView && lastView !== '/admin' && this.$route.path === '/admin') {
+      this.$router.replace(lastView)
+    }
+  },
   computed: {
     sidebarItems() {
       return [

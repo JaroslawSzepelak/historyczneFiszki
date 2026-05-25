@@ -9,6 +9,7 @@ const {
     toggleAdminRole,
     resetUserPassword,
     getUserStats,
+    register,
     createHttpError
 } = require('../services/userService');
 
@@ -50,6 +51,38 @@ router.get('/users', async (req, res, next) => {
                 pages: Math.ceil(result.total / limit)
             }
         });
+    } catch (err) {
+        next(err);
+    }
+});
+
+/**
+ * POST /api/admin/users
+ * Utwórz nowego użytkownika
+ * Body:
+ *   - email: email użytkownika (wymagany)
+ *   - password: hasło (wymagane, min 8 znaków)
+ *   - username: nazwa użytkownika (opcjonalne)
+ *   - first_name: imię (opcjonalne)
+ *   - last_name: nazwisko (opcjonalne)
+ *   - isAdmin: czy ma być admin (opcjonalne, default: false)
+ */
+router.post('/users', async (req, res, next) => {
+    try {
+        const newUser = await register({
+            email: req.body.email,
+            password: req.body.password,
+            username: req.body.username,
+            first_name: req.body.first_name,
+            last_name: req.body.last_name
+        });
+
+        if (req.body.isAdmin) {
+            await toggleAdminRole(newUser.id, true, req.user.userId);
+            newUser.isAdmin = true;
+        }
+
+        res.status(201).json({ user: newUser });
     } catch (err) {
         next(err);
     }

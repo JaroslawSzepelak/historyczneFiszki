@@ -5,9 +5,6 @@
       <p class="text-muted mb-4">
         Wybierz element z menu po lewej stronie, aby rozpocząć zarządzanie użytkownikami.
       </p>
-      <p class="small text-secondary">
-        Możesz przeglądać listę kont, edytować dane, zmieniać status, zarządzać rolami administratora i resetować hasła.
-      </p>
     </div>
   </div>
 </template>

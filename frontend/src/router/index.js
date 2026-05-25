@@ -80,6 +80,12 @@ const routes = [{
                 component: AdminUsersView
             },
             {
+                path: 'users/create',
+                name: 'admin-user-create',
+                component: UserEditView,
+                props: true
+            },
+            {
                 path: 'users/:id/edit',
                 name: 'admin-user-edit',
                 component: UserEditView,

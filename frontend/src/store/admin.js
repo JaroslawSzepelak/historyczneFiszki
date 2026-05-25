@@ -44,7 +44,8 @@ export default {
         getUsers: state => (filters = {}) => {
             return state.users.filter(user => {
                 if (filters.status && user.status !== filters.status) return false
-                if (filters.isAdmin !== undefined && user.isAdmin !== filters.isAdmin) return false
+                // Ignore empty string filter for isAdmin
+                if (filters.isAdmin !== undefined && filters.isAdmin !== '' && user.isAdmin !== filters.isAdmin) return false
                 return true
             })
         },
@@ -349,6 +350,26 @@ export default {
                 const errorMessage = error.message || 'Błąd podczas pobierania statystyk'
                 commit('setOperationError', { operation: 'fetchStats', error: errorMessage })
                 throw error
+            }
+        },
+
+        /**
+         * Utwórz nowego użytkownika
+         */
+        async createUser({ commit }, userData) {
+            commit('setLoading', true)
+            commit('clearOperationError', 'createUser')
+            
+            try {
+                const newUser = await adminService.createUser(userData)
+                commit('addUser', newUser)
+                return newUser
+            } catch (error) {
+                const errorMessage = error.message || 'Błąd podczas tworzenia użytkownika'
+                commit('setOperationError', { operation: 'createUser', error: errorMessage })
+                throw error
+            } finally {
+                commit('setLoading', false)
             }
         },
 

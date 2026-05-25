@@ -19,7 +19,8 @@ class AdminService {
             if (options.limit) params.append('limit', options.limit)
             if (options.search) params.append('search', options.search)
             if (options.status) params.append('status', options.status)
-            if (options.isAdmin !== undefined) params.append('isAdmin', options.isAdmin)
+            // Only append isAdmin when it's explicitly provided and not an empty string
+            if (options.isAdmin !== undefined && options.isAdmin !== '') params.append('isAdmin', options.isAdmin)
 
             const response = await axios.get(`${API_BASE_URL}/users?${params.toString()}`, {
                 withCredentials: true
@@ -139,6 +140,21 @@ class AdminService {
                 withCredentials: true
             })
             return response.data
+        } catch (error) {
+            throw this._handleError(error)
+        }
+    }
+
+    /**
+     * Utwórz nowego użytkownika
+     * @param {Object} userData - dane nowego użytkownika
+     */
+    async createUser(userData) {
+        try {
+            const response = await axios.post(`${API_BASE_URL}/users`, userData, {
+                withCredentials: true
+            })
+            return response.data.user
         } catch (error) {
             throw this._handleError(error)
         }
