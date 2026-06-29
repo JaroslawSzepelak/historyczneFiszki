@@ -9,6 +9,10 @@ export default {
         loading: false,
         loadingUsers: false,
         loadingDetail: false,
+        flashcards: [],
+        selectedFlashcard: null,
+        loadingFlashcards: false,
+        loadingFlashcardDetail: false,
         
         error: null,
         errors: {},
@@ -22,6 +26,19 @@ export default {
         pagination: {
             page: 1,
             limit: 50,
+            total: 0,
+            pages: 0
+        },
+
+        flashcardFilters: {
+            area: '',
+            era: '',
+            q: ''
+        },
+
+        flashcardPagination: {
+            page: 1,
+            limit: 20,
             total: 0,
             pages: 0
         },
@@ -60,7 +77,18 @@ export default {
         loading: state => state.loading,
         loadingUsers: state => state.loadingUsers,
         loadingDetail: state => state.loadingDetail,
-        isLoading: state => state.loading || state.loadingUsers || state.loadingDetail,
+        loadingFlashcards: state => state.loadingFlashcards,
+        loadingFlashcardDetail: state => state.loadingFlashcardDetail,
+        isLoading: state => state.loading || state.loadingUsers || state.loadingDetail || state.loadingFlashcards || state.loadingFlashcardDetail,
+
+        // Fiszki
+        flashcards: state => state.flashcards,
+        selectedFlashcard: state => state.selectedFlashcard,
+        getFlashcardById: state => id => {
+            return state.flashcards.find(flashcard => flashcard.id === id)
+        },
+        flashcardFilters: state => state.flashcardFilters,
+        flashcardPagination: state => state.flashcardPagination,
         
         // Błędy
         error: state => state.error,
@@ -116,6 +144,29 @@ export default {
         addUser(state, user) {
             state.users.unshift(user)
         },
+
+        // Fiszki
+        setFlashcards(state, flashcards) {
+            state.flashcards = flashcards
+        },
+        updateFlashcard(state, updatedFlashcard) {
+            const index = state.flashcards.findIndex(f => f.id === updatedFlashcard.id)
+            if (index !== -1) {
+                state.flashcards.splice(index, 1, updatedFlashcard)
+            }
+            if (state.selectedFlashcard && state.selectedFlashcard.id === updatedFlashcard.id) {
+                state.selectedFlashcard = updatedFlashcard
+            }
+        },
+        removeFlashcard(state, flashcardId) {
+            state.flashcards = state.flashcards.filter(f => f.id !== flashcardId)
+            if (state.selectedFlashcard && state.selectedFlashcard.id === flashcardId) {
+                state.selectedFlashcard = null
+            }
+        },
+        addFlashcard(state, flashcard) {
+            state.flashcards.unshift(flashcard)
+        },
         
         // Wybrany użytkownik
         setSelectedUser(state, user) {
@@ -123,6 +174,12 @@ export default {
         },
         clearSelectedUser(state) {
             state.selectedUser = null
+        },
+        setSelectedFlashcard(state, flashcard) {
+            state.selectedFlashcard = flashcard
+        },
+        clearSelectedFlashcard(state) {
+            state.selectedFlashcard = null
         },
         
         // Stany ładowania
@@ -134,6 +191,12 @@ export default {
         },
         setLoadingDetail(state, loading) {
             state.loadingDetail = loading
+        },
+        setLoadingFlashcards(state, loading) {
+            state.loadingFlashcards = loading
+        },
+        setLoadingFlashcardDetail(state, loading) {
+            state.loadingFlashcardDetail = loading
         },
         
         // Błędy
@@ -165,6 +228,16 @@ export default {
                 isAdmin: ''
             }
         },
+        setFlashcardFilters(state, filters) {
+            state.flashcardFilters = { ...state.flashcardFilters, ...filters }
+        },
+        clearFlashcardFilters(state) {
+            state.flashcardFilters = {
+                area: '',
+                era: '',
+                q: ''
+            }
+        },
         
         // Paginacja
         setPagination(state, pagination) {
@@ -172,6 +245,12 @@ export default {
         },
         setPage(state, page) {
             state.pagination.page = page
+        },
+        setFlashcardPagination(state, pagination) {
+            state.flashcardPagination = { ...state.flashcardPagination, ...pagination }
+        },
+        setFlashcardPage(state, page) {
+            state.flashcardPagination.page = page
         },
         
         // Statystyki
@@ -399,10 +478,159 @@ export default {
         },
 
         /**
+         * Pobierz listę fiszek
+         */
+        async fetchFlashcards({ commit, state }, options = {}) {
+            commit('setLoadingFlashcards', true)
+            commit('clearOperationError', 'fetchFlashcards')
+
+            try {
+                const requestOptions = {
+                    page: options.page || state.flashcardPagination.page,
+                    limit: options.limit || state.flashcardPagination.limit,
+                    ...state.flashcardFilters
+                }
+
+                const response = await adminService.getFlashcards(requestOptions)
+                const data = response.data || []
+                const pagination = response.pagination || {}
+
+                commit('setFlashcards', data)
+                commit('setFlashcardPagination', {
+                    page: pagination.page || state.flashcardPagination.page,
+                    limit: pagination.limit || state.flashcardPagination.limit,
+                    total: pagination.total || 0,
+                    pages: pagination.total ? Math.ceil(pagination.total / (pagination.limit || state.flashcardPagination.limit)) : 0
+                })
+
+                return response
+            } catch (error) {
+                const errorMessage = error.message || 'Błąd podczas pobierania fiszek'
+                commit('setOperationError', { operation: 'fetchFlashcards', error: errorMessage })
+                throw error
+            } finally {
+                commit('setLoadingFlashcards', false)
+            }
+        },
+
+        /**
+         * Pobierz szczegóły fiszki
+         */
+        async fetchFlashcardById({ commit }, flashcardId) {
+            commit('setLoadingFlashcardDetail', true)
+            commit('clearOperationError', 'fetchFlashcardById')
+
+            try {
+                const flashcard = await adminService.getFlashcardById(flashcardId)
+                commit('setSelectedFlashcard', flashcard)
+                return flashcard
+            } catch (error) {
+                const errorMessage = error.message || 'Błąd podczas pobierania danych fiszki'
+                commit('setOperationError', { operation: 'fetchFlashcardById', error: errorMessage })
+                throw error
+            } finally {
+                commit('setLoadingFlashcardDetail', false)
+            }
+        },
+
+        /**
+         * Utwórz nową fiszkę
+         */
+        async createFlashcard({ commit }, flashcardData) {
+            commit('setLoading', true)
+            commit('clearOperationError', 'createFlashcard')
+
+            try {
+                const newFlashcard = await adminService.createFlashcard(flashcardData)
+                commit('addFlashcard', newFlashcard)
+                return newFlashcard
+            } catch (error) {
+                const errorMessage = error.message || 'Błąd podczas tworzenia fiszki'
+                commit('setOperationError', { operation: 'createFlashcard', error: errorMessage })
+                throw error
+            } finally {
+                commit('setLoading', false)
+            }
+        },
+
+        /**
+         * Zaktualizuj fiszkę
+         */
+        async updateFlashcard({ commit }, { flashcardId, flashcardData }) {
+            commit('setLoading', true)
+            commit('clearOperationError', 'updateFlashcard')
+
+            try {
+                const updatedFlashcard = await adminService.updateFlashcard(flashcardId, flashcardData)
+                commit('updateFlashcard', updatedFlashcard)
+                commit('setSelectedFlashcard', updatedFlashcard)
+                return updatedFlashcard
+            } catch (error) {
+                const errorMessage = error.message || 'Błąd podczas aktualizacji fiszki'
+                commit('setOperationError', { operation: 'updateFlashcard', error: errorMessage })
+                throw error
+            } finally {
+                commit('setLoading', false)
+            }
+        },
+
+        /**
+         * Usuń fiszkę
+         */
+        async deleteFlashcard({ commit }, flashcardId) {
+            commit('setLoading', true)
+            commit('clearOperationError', 'deleteFlashcard')
+
+            try {
+                const result = await adminService.deleteFlashcard(flashcardId)
+                commit('removeFlashcard', flashcardId)
+                return result
+            } catch (error) {
+                const errorMessage = error.message || 'Błąd podczas usuwania fiszki'
+                commit('setOperationError', { operation: 'deleteFlashcard', error: errorMessage })
+                throw error
+            } finally {
+                commit('setLoading', false)
+            }
+        },
+
+        /**
+         * Ustaw filtry fiszek i pobierz listę od strony 1
+         */
+        async setFlashcardFiltersAndFetch({ commit, dispatch }, filters) {
+            commit('setFlashcardFilters', filters)
+            commit('setFlashcardPage', 1)
+            return dispatch('fetchFlashcards', { page: 1 })
+        },
+
+        /**
+         * Wyczyść filtry fiszek
+         */
+        clearFlashcardFiltersAndFetch({ commit, dispatch }) {
+            commit('clearFlashcardFilters')
+            commit('setFlashcardPage', 1)
+            return dispatch('fetchFlashcards', { page: 1 })
+        },
+
+        /**
+         * Zmień stronę listy fiszek
+         */
+        changeFlashcardPage({ dispatch }, page) {
+            return dispatch('fetchFlashcards', { page })
+        },
+
+        /**
          * Wyczyść zaznaczony użytkownika
          */
         clearSelectedUser({ commit }) {
             commit('clearSelectedUser')
+        },
+
+        /**
+         * Wyczyść zaznaczoną fiszkę
+         */
+        clearSelectedFlashcard({ commit }) {
+            commit('clearSelectedFlashcard')
         },
 
         /**

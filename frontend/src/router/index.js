@@ -13,7 +13,9 @@ import AdminLoginView from '@/views/AdminLoginView.vue'
 import AdminDashboardView from '@/views/admin/AdminDashboardView.vue'
 import AdminWelcomeView from '@/views/admin/AdminWelcomeView.vue'
 import AdminUsersView from '@/views/admin/AdminUsersView.vue'
+import AdminFlashcardsView from '@/views/admin/AdminFlashcardsView.vue'
 import UserEditView from '@/views/admin/UserEditView.vue'
+import FlashcardEditView from '@/views/admin/FlashcardEditView.vue'
 import store from '@/store'
 
 const routes = [{
@@ -89,6 +91,23 @@ const routes = [{
                 path: 'users/:id/edit',
                 name: 'admin-user-edit',
                 component: UserEditView,
+                props: true
+            },
+            {
+                path: 'flashcards',
+                name: 'admin-flashcards',
+                component: AdminFlashcardsView
+            },
+            {
+                path: 'flashcards/create',
+                name: 'admin-flashcard-create',
+                component: FlashcardEditView,
+                props: true
+            },
+            {
+                path: 'flashcards/:id/edit',
+                name: 'admin-flashcard-edit',
+                component: FlashcardEditView,
                 props: true
             }
         ]

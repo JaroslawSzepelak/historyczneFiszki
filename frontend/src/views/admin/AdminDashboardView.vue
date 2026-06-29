@@ -39,7 +39,8 @@ export default {
     sidebarItems() {
       return [
         { path: '/admin', label: 'Strona główna', icon: 'fa fa-home' },
-        { path: '/admin/users', label: 'Zarządzanie użytkownikami', icon: 'fa fa-users' }
+        { path: '/admin/users', label: 'Zarządzanie użytkownikami', icon: 'fa fa-users' },
+        { path: '/admin/flashcards', label: 'Zarządzanie fiszkami', icon: 'fa fa-clone' }
       ]
     }
   }

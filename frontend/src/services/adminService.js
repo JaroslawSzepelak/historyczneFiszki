@@ -161,6 +161,83 @@ class AdminService {
     }
 
     /**
+     * Pobierz listę fiszek z filtrowaniem i paginacją
+     */
+    async getFlashcards(options = {}) {
+        try {
+            const params = new URLSearchParams()
+            if (options.page) params.append('page', options.page)
+            if (options.limit) params.append('limit', options.limit)
+            if (options.area) params.append('area', options.area)
+            if (options.era) params.append('era', options.era)
+            if (options.q) params.append('q', options.q)
+
+            const response = await axios.get(`${API_BASE_URL}/flashcards?${params.toString()}`, {
+                withCredentials: true
+            })
+            return response.data
+        } catch (error) {
+            throw this._handleError(error)
+        }
+    }
+
+    /**
+     * Pobierz szczegóły fiszki
+     */
+    async getFlashcardById(flashcardId) {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/flashcards/${flashcardId}`, {
+                withCredentials: true
+            })
+            return response.data
+        } catch (error) {
+            throw this._handleError(error)
+        }
+    }
+
+    /**
+     * Utwórz nową fiszkę
+     */
+    async createFlashcard(flashcardData) {
+        try {
+            const response = await axios.post(`${API_BASE_URL}/flashcards`, flashcardData, {
+                withCredentials: true
+            })
+            return response.data
+        } catch (error) {
+            throw this._handleError(error)
+        }
+    }
+
+    /**
+     * Zaktualizuj fiszkę
+     */
+    async updateFlashcard(flashcardId, flashcardData) {
+        try {
+            const response = await axios.put(`${API_BASE_URL}/flashcards/${flashcardId}`, flashcardData, {
+                withCredentials: true
+            })
+            return response.data
+        } catch (error) {
+            throw this._handleError(error)
+        }
+    }
+
+    /**
+     * Usuń fiszkę
+     */
+    async deleteFlashcard(flashcardId) {
+        try {
+            const response = await axios.delete(`${API_BASE_URL}/flashcards/${flashcardId}`, {
+                withCredentials: true
+            })
+            return response.data
+        } catch (error) {
+            throw this._handleError(error)
+        }
+    }
+
+    /**
      * Prywatna metoda do obsługi błędów
      */
     _handleError(error) {
