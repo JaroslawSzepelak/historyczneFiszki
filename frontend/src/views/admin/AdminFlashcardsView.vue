@@ -19,11 +19,21 @@
         </div>
         <div class="col-6 col-md-3">
           <label class="form-label">Obszar</label>
-          <input type="text" class="form-control" v-model="localFilters.area" @keyup.enter="applyFilters" placeholder="np. polska" />
+          <select class="form-select" v-model="localFilters.area" @change="applyFilters">
+            <option value="">Wszystkie</option>
+            <option v-for="area in allAreas" :key="area.routeName" :value="area.routeName">
+              {{ area.name }}
+            </option>
+          </select>
         </div>
         <div class="col-6 col-md-3">
           <label class="form-label">Epoka</label>
-          <input type="text" class="form-control" v-model="localFilters.era" @keyup.enter="applyFilters" placeholder="np. średniowiecze" />
+          <select class="form-select" v-model="localFilters.era" @change="applyFilters">
+            <option value="">Wszystkie</option>
+            <option v-for="era in allEras" :key="era.routeName" :value="era.routeName">
+              {{ era.name }}
+            </option>
+          </select>
         </div>
         <div class="col-12 col-md-2 d-flex align-items-end">
           <button class="btn btn-primary w-100" @click="resetFilters">Wyczyść filtry</button>
@@ -115,6 +125,12 @@ export default {
     },
     pagination() {
       return this.$store.getters['admin/flashcardPagination']
+    },
+    allAreas() {
+      return this.$store.state.categories.allAreas || []
+    },
+    allEras() {
+      return this.$store.state.categories.allEras || []
     }
   },
   methods: {
