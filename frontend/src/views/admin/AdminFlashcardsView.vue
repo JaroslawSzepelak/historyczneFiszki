@@ -21,7 +21,7 @@
           <label class="form-label">Obszar</label>
           <select class="form-select" v-model="localFilters.area" @change="applyFilters">
             <option value="">Wszystkie</option>
-            <option v-for="area in allAreas" :key="area.routeName" :value="area.routeName">
+            <option v-for="area in allAreas" :key="area.routeName" :value="area.name">
               {{ area.name }}
             </option>
           </select>
@@ -30,7 +30,7 @@
           <label class="form-label">Epoka</label>
           <select class="form-select" v-model="localFilters.era" @change="applyFilters">
             <option value="">Wszystkie</option>
-            <option v-for="era in allEras" :key="era.routeName" :value="era.routeName">
+            <option v-for="era in allEras" :key="era.routeName" :value="era.name">
               {{ era.name }}
             </option>
           </select>
